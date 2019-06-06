@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '1.0.54'
+local version = '1.0.55'
 
 hexchat.register(
 	'Ignore Notifications',
@@ -8,7 +8,7 @@ hexchat.register(
 )
 
 -- For future proofing in case a reset is ever needed
-hexchat.pluginprefs['version'] = version
+hexchat.pluginprefs['version'] = 'v' .. version
 
 ----------------------------------------------------
 -- Utility functions
@@ -18,6 +18,10 @@ hexchat.pluginprefs['version'] = version
 if unpack == nil then
 	unpack = table.unpack
 end
+
+-- Delimiter variables. Changing preferences delimiter will invalidate preferences
+local spaceDelimiter = '|||SPACE|||'
+local preferencesDelimiter = '||||||'
 
 -- Converts table to human readable format
 local function dump(o)
@@ -44,6 +48,18 @@ local function split(s, delimiter)
 	return result
 end
 
+-- Reverse an array-like table's order
+local function reverse_array_table(arr)
+	local i = 1
+	local j = #arr
+	while i < j do
+		arr[i], arr[j] = arr[j], arr[i]
+		i = i + 1
+		j = j - 1
+	end
+	return arr
+end
+
 ----------------------------------------------------
 -- Plugin preferences
 ----------------------------------------------------
@@ -52,24 +68,39 @@ end
 -- Returns empty table if not found
 local function get_channel_preference(channel, network)
 	local pref =
-		hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel]
+		hexchat.pluginprefs['ignoreNotifications_' .. network .. preferencesDelimiter .. channel]
 	if pref then
 		return pref
 	end
 	return {}
 end
 
--- Set pluginprefs value based on given network and channel strings to given value string
-local function set_channel_preference(channel, network, value)
-	hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel] =
-		value
+-- Returns true if channel is set to ignore, false otherwise
+local function isIgnored(channel, network)
+	if get_channel_preference(channel, network) == 'ignore' then
+		return true
+	else
+		return false
+	end
 end
 
--- Convert pluginprefs key to table[1] = network, table[2] = channel format
+-- Set pluginprefs value based on given network and channel strings to given value string
+local function set_channel_preference(channel, network, value)
+	hexchat.pluginprefs['ignoreNotifications_' .. network .. preferencesDelimiter .. channel]
+	= value
+end
+
+-- Convert pluginprefs key to table[1] = channel, table[2] = network format
 local function convert_preference_to_table(setting)
-	local settingArray = split(setting, '|||')
+	local settingArray = split(setting, preferencesDelimiter)
 	settingArray[1] = settingArray[1]:sub(21)
-	return settingArray
+	return reverse_array_table(settingArray)
+end
+
+local function reset_plugin_prefs()
+	for a, b in pairs(hexchat.pluginprefs) do
+		hexchat.pluginprefs[a] = nil
+	end
 end
 
 ----------------------------------------------------
@@ -84,8 +115,8 @@ local function add_ignored_channel_menu(channel, network)
 	hexchat.command(
 		'menu -t1 add "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '/' .. channel .. '" "" "unignoreNotifications ' .. channel:gsub(
 			' ',
-			'|||SPACE|||'
-		) .. ' ' .. network:gsub(' ', '|||SPACE|||') .. '"'
+			spaceDelimiter
+		) .. ' ' .. network:gsub(' ', spaceDelimiter) .. '"'
 	)
 end
 
@@ -95,7 +126,7 @@ local function remove_ignored_channel_menu(channel, network)
 	for name, value in pairs(hexchat.pluginprefs) do
 		if name:sub(0, 20) == 'ignoreNotifications_' then
 			local nameArray = convert_preference_to_table(name)
-			if nameArray[1] == network then
+			if nameArray[2] == network then
 				networkShouldBeRemoved = false
 			end
 		end
@@ -116,7 +147,7 @@ local function generate_ignored_menu()
 	for name, value in pairs(hexchat.pluginprefs) do
 		if name:sub(0, 20) == 'ignoreNotifications_' then
 			local nameArray = convert_preference_to_table(name)
-			add_ignored_channel_menu(nameArray[2], nameArray[1])
+			add_ignored_channel_menu(nameArray[1], nameArray[2])
 		end
 	end
 end
@@ -151,7 +182,7 @@ end
 local function check_notifications(args, attrs, event)
 	local channel = hexchat.get_info('channel')
 	local network = hexchat.get_info('network')
-	if get_channel_preference(channel, network) == 'ignore' then
+	if isIgnored(channel, network) then
 		hexchat.emit_print_attrs(attrs, event, unpack(args))
 		return hexchat.EAT_ALL
 	end
@@ -168,10 +199,10 @@ local function callback_handler(word)
 	returnArray[1] = hexchat.get_info('channel')
 	returnArray[2] = hexchat.get_info('network')
 	if word[2] then
-		returnArray[1] = word[2]:gsub('|||SPACE|||', ' ')
+		returnArray[1] = word[2]:gsub(spaceDelimiter, ' ')
 	end
 	if word[3] then
-		returnArray[2] = word[3]:gsub('|||SPACE|||', ' ')
+		returnArray[2] = word[3]:gsub(spaceDelimiter, ' ')
 	end
 	return returnArray
 end
@@ -193,8 +224,7 @@ end
 -- Will print out if a channel is ignored or not
 local function check_notifications_cb(word)
 	local infoArray = callback_handler(word)
-	local value = get_channel_preference(infoArray[1], infoArray[2])
-	if value == 'ignore' then
+	if isIgnored(infoArray[1], infoArray[2]) then
 		print(
 			'Channel ',
 			infoArray[1],
@@ -215,9 +245,9 @@ end
 
 -- Resets pluginprefs
 local function reset_plugin_prefs_cb()
-	for a, b in pairs(hexchat.pluginprefs) do
-		hexchat.pluginprefs[a] = nil
-	end
+	reset_plugin_prefs()
+	unload_menus()
+	load_menus()
 end
 
 -- Prints out hexchat.pluginprefs in human readable format
@@ -252,7 +282,7 @@ hexchat.hook_command(
 hexchat.hook_command(
 	'debugIgnoreNotifications',
 	debug_plugin_prefs_cb,
-	'Usage: debugIgnoreNotifications\n\tWill print out a human readable version of the plugin preferences.'
+	'Usage: debugIgnoreNotifications\n\tWill print out plugin preferences.'
 )
 
 ----------------------------------------------------
@@ -264,14 +294,14 @@ hexchat.hook_print_attrs(
 	function(args, attrs)
 		return check_notifications(args, attrs, 'Channel Message')
 	end,
-	hexchat.PRI_HIGHEST
+	hexchat.PRI_HIGH
 )
 hexchat.hook_print_attrs(
 	'Channel Action Hilight',
 	function(args, attrs)
 		return check_notifications(args, attrs, 'Channel Action')
 	end,
-	hexchat.PRI_HIGHEST
+	hexchat.PRI_HIGH
 )
 
 ----------------------------------------------------

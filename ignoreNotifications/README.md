@@ -8,15 +8,11 @@ Also note that the notifications are converted into their non-notification count
 
 ## Todo
 
--   Improve documentation on all functions
 -   Add availability info
 -   Install info
--   Document commands
 -   Reverse preferences
--   Implement version tracking system
--   Implement reset command
--   Implement upgrade system based on version
 -   Check/change naming style
+-   Highlights
 
 ## License
 

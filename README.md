@@ -10,6 +10,11 @@ Each folder contains a different script for HexChat as well as a README describi
 
 For installation: `Window` > `Plugins and Scripts` will allow you to load and unload them.
 
+## Todo
+
+-   Ignore private messages from x users
+-   Ignore text events like gives voice
+
 ## License
 
 [MIT](./LICENSE)
