@@ -1,6 +1,6 @@
-# Ignore Notifications
+# Unhighlight Channels
 
-This script adds in a menu under `Settings` called `Ignoring Notifications`. You can select `Ignore Current Channel` to ignore notifications from the currently selected channel and then select that channel under `Currently Ignored Channels` to unignore it.
+This script adds in a menu under `Settings` called `Unhighlighted Channels`. You can select `Unhighlight Current Channel` to ignore notifications from the currently selected channel and then select that channel under `Currently Unhighlighted Channels` to unignore it.
 
 Note that notifications being ignored include `Channel Msg Hilight` and `Channel Action Hilight` text events.
 
@@ -10,9 +10,6 @@ Also note that the notifications are converted into their non-notification count
 
 -   Add availability info
 -   Install info
--   Reverse preferences
--   Check/change naming style
--   Highlights
 
 ## License
 

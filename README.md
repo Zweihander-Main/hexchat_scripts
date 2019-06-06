@@ -4,7 +4,7 @@ Each folder contains a different script for HexChat as well as a README describi
 
 ## List of Scripts
 
-[Ignore Notifications](./ignoreNotifications/) -- allows you to set notifications coming from individual channels to be ignored
+[Unhighlight Channels](./unhighlightChannels/) -- converts highlights from user-selected channels to regular non-highlighted text events
 
 ## Installation
 
