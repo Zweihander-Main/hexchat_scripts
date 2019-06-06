@@ -1,10 +1,5 @@
 -- SPDX-License-Identifier: MIT
-hexchat.register('Ignore Notifications', '1.0.51', 'Allows you to ignore notifications for specific channels')
-
--- Todo:
--- Version number
--- Documentation
--- Add some way to ignore private messages from channel
+hexchat.register('Ignore Notifications', '1.0.52', 'Allows you to ignore notifications for specific channels')
 
 -- For debugging: Converts table to human readable format
 -- local function dump(o)
