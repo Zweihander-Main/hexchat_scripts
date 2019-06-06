@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '1.0.53'
+local version = '1.0.54'
 
 hexchat.register(
 	'Ignore Notifications',
@@ -7,30 +7,28 @@ hexchat.register(
 	'Allows you to ignore notifications for specific channels'
 )
 
--- For debugging: Converts table to human readable format
--- local function dump(o)
---    if type(o) == 'table' then
---       local s = '{ '
---       for k,v in pairs(o) do
---          if type(k) ~= 'number' then k = '"'..k..'"' end
---          s = s .. '['..k..'] = ' .. dump(v) .. ','
---       end
---       return s .. '} '
---    else
---       return tostring(o)
---    end
--- end
-
--- For debugging: Resets pluginprefs
--- local function reset_plugin_prefs()
--- 	for a,b in pairs(hexchat.pluginprefs) do
--- 		hexchat.pluginprefs[a] = nil
--- 	end
--- end
+-- For future proofing in case a reset is ever needed
+hexchat.pluginprefs['version'] = version
 
 -- Fix for lua 5.2
 if unpack == nil then
 	unpack = table.unpack
+end
+
+-- Converts table to human readable format
+local function dump(o)
+	if type(o) == 'table' then
+		local s = '{ '
+		for k, v in pairs(o) do
+			if type(k) ~= 'number' then
+				k = '"' .. k .. '"'
+			end
+			s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+		end
+		return s .. '} '
+	else
+		return tostring(o)
+	end
 end
 
 -- Returns an array-like table from a string s, splitting the string using delimiter
@@ -139,22 +137,6 @@ local function check_notifications(args, attrs, event)
 	end
 end
 
-hexchat.hook_print_attrs(
-	'Channel Msg Hilight',
-	function(args, attrs)
-		return check_notifications(args, attrs, 'Channel Message')
-	end,
-	hexchat.PRI_HIGHEST
-)
-
-hexchat.hook_print(
-	'Channel Action Hilight',
-	function(args, attrs)
-		return check_notifications(args, attrs, 'Channel Action')
-	end,
-	hexchat.PRI_HIGHEST
-)
-
 -- Uses default context unless arguments supplied.
 -- Converts arguments if they're coming from menu
 local function callback_handler(word)
@@ -170,18 +152,21 @@ local function callback_handler(word)
 	return returnArray
 end
 
+-- Will set channel to ignore notifications
 local function ignore_notifications_cb(word)
 	local infoArray = callback_handler(word)
 	set_channel_preference(infoArray[1], infoArray[2], 'ignore')
 	add_ignored_channel_menu(infoArray[1], infoArray[2])
 end
 
+-- Will set channel to unignore notifications
 local function unignore_notifications_cb(word)
 	local infoArray = callback_handler(word)
 	set_channel_preference(infoArray[1], infoArray[2], nil)
 	remove_ignored_channel_menu(infoArray[1], infoArray[2])
 end
 
+-- Will print out if a channel is ignored or not
 local function check_notifications_cb(word)
 	local infoArray = callback_handler(word)
 	local value = get_channel_preference(infoArray[1], infoArray[2])
@@ -204,6 +189,18 @@ local function check_notifications_cb(word)
 	end
 end
 
+-- Resets pluginprefs
+local function reset_plugin_prefs_cb()
+	for a, b in pairs(hexchat.pluginprefs) do
+		hexchat.pluginprefs[a] = nil
+	end
+end
+
+-- Prints out hexchat.pluginprefs in human readable format
+local function debug_plugin_prefs_cb()
+	print(dump(hexchat.pluginprefs))
+end
+
 hexchat.hook_command(
 	'ignoreNotifications',
 	ignore_notifications_cb,
@@ -218,6 +215,31 @@ hexchat.hook_command(
 	'checkIgnoreNotifications',
 	check_notifications_cb,
 	'Usage: checkIgnoreNotifications [channel] [network]\n\tChecks if notifications are ignored for channel. Will use current context for any missing arguments.'
+)
+hexchat.hook_command(
+	'resetIgnoreNotifications',
+	reset_plugin_prefs_cb,
+	'Usage: resetIgnoreNotifications\n\tWill reset the plugin preferences and remove all channels from being ignored. '
+)
+hexchat.hook_command(
+	'debugIgnoreNotifications',
+	debug_plugin_prefs_cb,
+	'Usage: debugIgnoreNotifications\n\tWill print out a human readable version of the plugin preferences.'
+)
+
+hexchat.hook_print_attrs(
+	'Channel Msg Hilight',
+	function(args, attrs)
+		return check_notifications(args, attrs, 'Channel Message')
+	end,
+	hexchat.PRI_HIGHEST
+)
+hexchat.hook_print_attrs(
+	'Channel Action Hilight',
+	function(args, attrs)
+		return check_notifications(args, attrs, 'Channel Action')
+	end,
+	hexchat.PRI_HIGHEST
 )
 
 hexchat.hook_unload(unload_menus)
