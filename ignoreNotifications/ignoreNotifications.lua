@@ -10,6 +10,10 @@ hexchat.register(
 -- For future proofing in case a reset is ever needed
 hexchat.pluginprefs['version'] = version
 
+----------------------------------------------------
+-- Utility functions
+----------------------------------------------------
+
 -- Fix for lua 5.2
 if unpack == nil then
 	unpack = table.unpack
@@ -40,6 +44,10 @@ local function split(s, delimiter)
 	return result
 end
 
+----------------------------------------------------
+-- Plugin preferences
+----------------------------------------------------
+
 -- Get pluginprefs value based on given network and channel strings
 -- Returns empty table if not found
 local function get_channel_preference(channel, network)
@@ -63,6 +71,10 @@ local function convert_preference_to_table(setting)
 	settingArray[1] = settingArray[1]:sub(21)
 	return settingArray
 end
+
+----------------------------------------------------
+-- Menu manipulation
+----------------------------------------------------
 
 -- Add menu item of currently ignored channel based on network and channel string
 local function add_ignored_channel_menu(channel, network)
@@ -109,6 +121,10 @@ local function generate_ignored_menu()
 	end
 end
 
+----------------------------------------------------
+-- Menu loading and unloading
+----------------------------------------------------
+
 -- Loads all the menus
 local function load_menus()
 	hexchat.command('menu add "Settings/Ignoring Notifications"')
@@ -126,6 +142,10 @@ local function unload_menus()
 	hexchat.command('menu del "Settings/Ignoring Notifications"')
 end
 
+----------------------------------------------------
+-- Text event handlers
+----------------------------------------------------
+
 -- Will check if channel is to be ignored, then emits print and eats everything else
 -- (event should be non-notification version of notification)
 local function check_notifications(args, attrs, event)
@@ -136,6 +156,10 @@ local function check_notifications(args, attrs, event)
 		return hexchat.EAT_ALL
 	end
 end
+
+----------------------------------------------------
+-- Command callbacks
+----------------------------------------------------
 
 -- Uses default context unless arguments supplied.
 -- Converts arguments if they're coming from menu
@@ -201,6 +225,10 @@ local function debug_plugin_prefs_cb()
 	print(dump(hexchat.pluginprefs))
 end
 
+----------------------------------------------------
+-- Command hooks
+----------------------------------------------------
+
 hexchat.hook_command(
 	'ignoreNotifications',
 	ignore_notifications_cb,
@@ -227,6 +255,10 @@ hexchat.hook_command(
 	'Usage: debugIgnoreNotifications\n\tWill print out a human readable version of the plugin preferences.'
 )
 
+----------------------------------------------------
+-- Text event hooks
+----------------------------------------------------
+
 hexchat.hook_print_attrs(
 	'Channel Msg Hilight',
 	function(args, attrs)
@@ -241,6 +273,10 @@ hexchat.hook_print_attrs(
 	end,
 	hexchat.PRI_HIGHEST
 )
+
+----------------------------------------------------
+-- Menu calls
+----------------------------------------------------
 
 hexchat.hook_unload(unload_menus)
 load_menus()
