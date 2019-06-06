@@ -1,7 +1,9 @@
 -- SPDX-License-Identifier: MIT
+local version = '1.0.53'
+
 hexchat.register(
 	'Ignore Notifications',
-	'1.0.53',
+	version,
 	'Allows you to ignore notifications for specific channels'
 )
 

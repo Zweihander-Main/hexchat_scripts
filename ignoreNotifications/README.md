@@ -1,4 +1,4 @@
-# ignoreNotifications.lua
+# Ignore Notifications
 
 This script adds in a menu under `Settings` called `Ignoring Notifications`. You can select `Ignore Current Channel` to ignore notifications from the currently selected channel and then select that channel under `Currently Ignored Channels` to unignore it.
 
@@ -9,6 +9,8 @@ Also note that the notifications are converted into their non-notification count
 ## Todo
 
 -   Improve documentation on all functions
+-   Add availability info
+-   Install info
 -   Document commands
 -   Reverse preferences
 -   Implement version tracking system
