@@ -1,5 +1,9 @@
 -- SPDX-License-Identifier: MIT
-hexchat.register('Ignore Notifications', '1.0.53', 'Allows you to ignore notifications for specific channels')
+hexchat.register(
+	'Ignore Notifications',
+	'1.0.53',
+	'Allows you to ignore notifications for specific channels'
+)
 
 -- For debugging: Converts table to human readable format
 -- local function dump(o)
@@ -29,17 +33,18 @@ end
 
 -- Returns an array-like table from a string s, splitting the string using delimiter
 local function split(s, delimiter)
-    local result = {};
-    for match in (s..delimiter):gmatch('(.-)'..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
+	local result = {}
+	for match in (s .. delimiter):gmatch('(.-)' .. delimiter) do
+		table.insert(result, match)
+	end
+	return result
 end
 
 -- Get pluginprefs value based on given network and channel strings
 -- Returns empty table if not found
 local function get_channel_preference(channel, network)
-	local pref = hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel]
+	local pref =
+		hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel]
 	if pref then
 		return pref
 	end
@@ -48,11 +53,12 @@ end
 
 -- Set pluginprefs value based on given network and channel strings to given value string
 local function set_channel_preference(channel, network, value)
-	hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel] = value
+	hexchat.pluginprefs['ignoreNotifications_' .. network .. '|||' .. channel] =
+		value
 end
 
 -- Convert pluginprefs key to table[1] = network, table[2] = channel format
-local function convert_preference_to_table (setting)
+local function convert_preference_to_table(setting)
 	local settingArray = split(setting, '|||')
 	settingArray[1] = settingArray[1]:sub(21)
 	return settingArray
@@ -60,14 +66,21 @@ end
 
 -- Add menu item of currently ignored channel based on network and channel string
 local function add_ignored_channel_menu(channel, network)
-	hexchat.command('menu add "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '"')
-	hexchat.command('menu -t1 add "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '/' .. channel .. '" "" "unignoreNotifications ' .. channel:gsub(' ', '|||SPACE|||') .. ' ' .. network:gsub(' ', '|||SPACE|||') .. '"')
+	hexchat.command(
+		'menu add "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '"'
+	)
+	hexchat.command(
+		'menu -t1 add "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '/' .. channel .. '" "" "unignoreNotifications ' .. channel:gsub(
+			' ',
+			'|||SPACE|||'
+		) .. ' ' .. network:gsub(' ', '|||SPACE|||') .. '"'
+	)
 end
 
 -- Remove menu item of given channel. Removes network menu if no other channels ignored in network
 local function remove_ignored_channel_menu(channel, network)
 	local networkShouldBeRemoved = true
-	for name,value in pairs(hexchat.pluginprefs) do
+	for name, value in pairs(hexchat.pluginprefs) do
 		if name:sub(0, 20) == 'ignoreNotifications_' then
 			local nameArray = convert_preference_to_table(name)
 			if nameArray[1] == network then
@@ -76,15 +89,19 @@ local function remove_ignored_channel_menu(channel, network)
 		end
 	end
 	if networkShouldBeRemoved == true then
-		hexchat.command('menu del "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '"')
+		hexchat.command(
+			'menu del "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '"'
+		)
 	else
-		hexchat.command('menu del "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '/' .. channel .. '"')
+		hexchat.command(
+			'menu del "Settings/Ignoring Notifications/Currently Ignored Channels/' .. network .. '/' .. channel .. '"'
+		)
 	end
 end
 
 -- Generated menu of ignored channels from pluginprefs
 local function generate_ignored_menu()
-	for name,value in pairs(hexchat.pluginprefs) do
+	for name, value in pairs(hexchat.pluginprefs) do
 		if name:sub(0, 20) == 'ignoreNotifications_' then
 			local nameArray = convert_preference_to_table(name)
 			add_ignored_channel_menu(nameArray[2], nameArray[1])
@@ -95,8 +112,12 @@ end
 -- Loads all the menus
 local function load_menus()
 	hexchat.command('menu add "Settings/Ignoring Notifications"')
-	hexchat.command('menu add "Settings/Ignoring Notifications/Ignore Current Channel" "ignoreNotifications"')
-	hexchat.command('menu add "Settings/Ignoring Notifications/Currently Ignored Channels"')
+	hexchat.command(
+		'menu add "Settings/Ignoring Notifications/Ignore Current Channel" "ignoreNotifications"'
+	)
+	hexchat.command(
+		'menu add "Settings/Ignoring Notifications/Currently Ignored Channels"'
+	)
 	generate_ignored_menu()
 end
 
@@ -116,13 +137,21 @@ local function check_notifications(args, attrs, event)
 	end
 end
 
-hexchat.hook_print_attrs('Channel Msg Hilight', function(args, attrs)
-	return check_notifications(args, attrs, 'Channel Message')
-end, hexchat.PRI_HIGHEST)
+hexchat.hook_print_attrs(
+	'Channel Msg Hilight',
+	function(args, attrs)
+		return check_notifications(args, attrs, 'Channel Message')
+	end,
+	hexchat.PRI_HIGHEST
+)
 
-hexchat.hook_print('Channel Action Hilight', function(args, attrs)
-	return check_notifications(args, attrs, 'Channel Action')
-end, hexchat.PRI_HIGHEST)
+hexchat.hook_print(
+	'Channel Action Hilight',
+	function(args, attrs)
+		return check_notifications(args, attrs, 'Channel Action')
+	end,
+	hexchat.PRI_HIGHEST
+)
 
 -- Uses default context unless arguments supplied.
 -- Converts arguments if they're coming from menu
@@ -155,15 +184,39 @@ local function check_notifications_cb(word)
 	local infoArray = callback_handler(word)
 	local value = get_channel_preference(infoArray[1], infoArray[2])
 	if value == 'ignore' then
-		print('Channel ', infoArray[1], ' of network ', infoArray[2], ' is ignored.')
+		print(
+			'Channel ',
+			infoArray[1],
+			' of network ',
+			infoArray[2],
+			' is ignored.'
+		)
 	else
-		print('Channel ', infoArray[1], ' of network ', infoArray[2], ' is not ignored.')
+		print(
+			'Channel ',
+			infoArray[1],
+			' of network ',
+			infoArray[2],
+			' is not ignored.'
+		)
 	end
 end
 
-hexchat.hook_command('ignoreNotifications', ignore_notifications_cb, 'Usage: ignoreNotifications [channel] [network]\n\tStarts ignoring notifications for channel. Will use current context for any missing arguments.')
-hexchat.hook_command('unignoreNotifications', unignore_notifications_cb, 'Usage: unignoreNotifications [channel] [network]\n\tStops ignoring notifications for channel. Will use current context for any missing arguments.')
-hexchat.hook_command('checkIgnoreNotifications', check_notifications_cb, 'Usage: checkIgnoreNotifications [channel] [network]\n\tChecks if notifications are ignored for channel. Will use current context for any missing arguments.')
+hexchat.hook_command(
+	'ignoreNotifications',
+	ignore_notifications_cb,
+	'Usage: ignoreNotifications [channel] [network]\n\tStarts ignoring notifications for channel. Will use current context for any missing arguments.'
+)
+hexchat.hook_command(
+	'unignoreNotifications',
+	unignore_notifications_cb,
+	'Usage: unignoreNotifications [channel] [network]\n\tStops ignoring notifications for channel. Will use current context for any missing arguments.'
+)
+hexchat.hook_command(
+	'checkIgnoreNotifications',
+	check_notifications_cb,
+	'Usage: checkIgnoreNotifications [channel] [network]\n\tChecks if notifications are ignored for channel. Will use current context for any missing arguments.'
+)
 
 hexchat.hook_unload(unload_menus)
 load_menus()

@@ -1,0 +1,32 @@
+{
+	"name": "hexchat_scripts",
+	"version": "1.0.0",
+	"description": "Repository of useful scripts for the HexChat IRC client",
+	"main": "README.md",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Zweihander-Main/hexchat_scripts.git"
+	},
+	"keywords": [
+		"hexchat"
+	],
+	"author": "Zweihänder",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Zweihander-Main/hexchat_scripts/issues"
+	},
+	"homepage": "https://github.com/Zweihander-Main/hexchat_scripts#readme",
+	"devDependencies": {
+		"@prettier/plugin-lua": "0.0.1",
+		"prettier": "^1.17.1"
+	},
+	"prettier": {
+		"singleQuote": true,
+		"trailingComma": "es5",
+		"tabWidth": 4,
+		"useTabs": true
+	}
+}
