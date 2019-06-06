@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-hexchat.register('Ignore Notifications', '1.0.52', 'Allows you to ignore notifications for specific channels')
+hexchat.register('Ignore Notifications', '1.0.53', 'Allows you to ignore notifications for specific channels')
 
 -- For debugging: Converts table to human readable format
 -- local function dump(o)
@@ -87,7 +87,7 @@ local function generate_ignored_menu()
 	for name,value in pairs(hexchat.pluginprefs) do
 		if name:sub(0, 20) == 'ignoreNotifications_' then
 			local nameArray = convert_preference_to_table(name)
-			add_ignored_channel_menu(nameArray[1], nameArray[2])
+			add_ignored_channel_menu(nameArray[2], nameArray[1])
 		end
 	end
 end
