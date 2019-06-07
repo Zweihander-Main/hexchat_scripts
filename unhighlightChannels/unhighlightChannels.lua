@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '1.1.0'
+local version = '1.1.3'
 
 hexchat.register(
 	'Unhighlight Channels',
@@ -83,7 +83,7 @@ end
 local function convert_preference_to_table(setting)
 	local settingsArray = split(setting, preferencesDelimiter)
 	local chanNetTable = {
-		network = settingsArray[1]:sub(21),
+		network = settingsArray[1]:sub(string.len(preferencesPrefix) + 1),
 		channel = settingsArray[2],
 	}
 	return chanNetTable
@@ -92,7 +92,7 @@ end
 -- Iterates through channel preferences and passes their names and values to given function
 local function iterate_channel_prefs_over_lambda(lambda)
 	for name, value in pairs(hexchat.pluginprefs) do
-		if name:sub(0, 20) == preferencesPrefix then
+		if name:sub(0, string.len(preferencesPrefix)) == preferencesPrefix then
 			lambda(name, value)
 		end
 	end
