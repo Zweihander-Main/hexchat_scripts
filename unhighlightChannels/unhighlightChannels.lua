@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '1.1.3'
+local version = '1.1.6'
 
 hexchat.register(
 	'Unhighlight Channels',
@@ -44,6 +44,10 @@ local function split(s, delimiter)
 		table.insert(result, match)
 	end
 	return result
+end
+
+local function trim(s)
+	return (s:gsub('^%s*(.-)%s*$', '%1'))
 end
 
 ----------------------------------------------------
@@ -207,10 +211,10 @@ local function callback_handler(word)
 		network = hexchat.get_info('network'),
 	}
 	if word[2] then
-		returnArray['channel'] = word[2]:gsub(spaceDelimiter, ' ')
+		returnArray['channel'] = trim(word[2]:gsub(spaceDelimiter, ' '))
 	end
 	if word[3] then
-		returnArray['network'] = word[3]:gsub(spaceDelimiter, ' ')
+		returnArray['network'] = trim(word[3]:gsub(spaceDelimiter, ' '))
 	end
 	return returnArray
 end
@@ -321,7 +325,7 @@ hexchat.hook_print_attrs(
 )
 
 ----------------------------------------------------
--- Menu calls
+-- Init
 ----------------------------------------------------
 
 hexchat.hook_unload(unload_menus)
