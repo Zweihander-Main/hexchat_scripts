@@ -13,7 +13,8 @@ For installation: `Window` > `Plugins and Scripts` will allow you to load and un
 ## Todo
 
 -   Future script: Ignore private messages from users matching x both globally and maybe per network
--   Future script: Ignore selected text events per channel
+-   Future script: Ignore selected text events per channel or possibly globally
+-   Future script: Highlight all text events in a channel
 
 ## Available for Hire
 
