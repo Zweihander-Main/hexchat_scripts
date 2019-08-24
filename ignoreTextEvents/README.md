@@ -2,6 +2,12 @@
 
 This isn't the prettiest Lua code you'll ever see however it does do the job and manages to stay in one easy to load/share/transfer file.
 
+https://gist.github.com/turtleDev/a54a61a14e4a438f893865843279fd40
+
+This only hooks the text events, not the server events themselves. This won't stop private message/notice/part behavior but will suppress the text events emitted from them.
+
+This will kill/eat text events.
+
 ## Commands added
 
 ## Todo
