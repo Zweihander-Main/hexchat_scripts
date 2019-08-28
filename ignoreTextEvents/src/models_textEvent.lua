@@ -46,7 +46,6 @@ function convert_tevalue_to_table(value)
 end
 
 local function convert_table_to_tevalue(valueTable)
-	print(util.dump(valueTable))
 	local returnString = ''
 	returnString =
 		returnString .. valueTable['global'] .. const.preferencesDelimiter
@@ -89,7 +88,6 @@ end
 
 function models_textEvent.remove_event(keyType, event, network, channel)
 	local formattedTable = models_textEvent.get_event(event)
-	print(util.dump(formattedTable))
 	if keyType == 'global' then
 		formattedTable['global'] = 'false'
 	elseif keyType == 'network' then
