@@ -9,16 +9,39 @@ local db = require'db.lua'
 -- Views: Menu manipulation
 ----------------------------------------------------
 
-local function add_text_events_to_menu(menu, eventsString, action, actionIdent)
+local function add_text_events_to_currently_ignored_in_menu(
+eventsString,
+	menuSettings
+)
 	local eventsArray = db_utils.comma_delim_string_to_array(eventsString)
-	print(util.dump(eventsArray))
 	for key, event in pairs(eventsArray) do
-		hexchat.command(
-			'menu -t1 add "' .. menu .. event .. '" "" "' .. action .. ' ' .. event:gsub(
+		local commandToAdd =
+			'menu -t1 add "Settings/Ignore Text Events/Events Currently Ignored In/'
+		if (menuSettings.type == 'channel') then
+			commandToAdd =
+				commandToAdd .. 'Channels/' .. menuSettings.network .. '/' .. menuSettings.channel .. '/'
+		else
+			commandToAdd =
+				commandToAdd .. 'Networks/' .. menuSettings.network .. '/'
+		end
+
+		commandToAdd =
+			commandToAdd .. event .. '" "" "stopIgnoringEvent ' .. menuSettings.type .. ' ' .. event:gsub(
 				' ',
 				const.spaceDelimiter
-			) .. ' ' .. actionIdent .. '"'
-		)
+			) .. ' ' .. menuSettings.network:gsub(' ', const.spaceDelimiter)
+
+		if (menuSettings.type == 'channel') then
+			commandToAdd =
+				commandToAdd .. ' ' .. menuSettings.channel:gsub(
+					' ',
+					const.spaceDelimiter
+				)
+		end
+
+		commandToAdd = commandToAdd .. '"'
+
+		hexchat.command(commandToAdd)
 	end
 end
 
@@ -29,27 +52,39 @@ local function add_ignored_channel_menu(network, channel, eventsString)
 	hexchat.command(
 		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '"'
 	)
-	add_text_events_to_menu(
-		'Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '/',
-		eventsString,
-		'stopIgnoringEvent',
-		'channel ' .. channel:gsub(
-			' ',
-			const.spaceDelimiter
-		) .. ' ' .. network:gsub(' ', const.spaceDelimiter)
-	)
+	local menuSettings = {
+		type = 'channel',
+		channel = channel,
+		network = network,
+	}
+	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
+
+	-- add_text_events_to_menu(
+	-- 	'Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '/',
+	-- 	eventsString,
+	-- 	'stopIgnoringEvent',
+	-- 	'channel ' .. channel:gsub(
+	-- 		' ',
+	-- 		const.spaceDelimiter
+	-- 	) .. ' ' .. network:gsub(' ', const.spaceDelimiter)
+	-- )
 end
 
 local function add_ignored_network_menu(network, eventsString)
 	hexchat.command(
 		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '"'
 	)
-	add_text_events_to_menu(
-		'Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '/',
-		eventsString,
-		'stopIgnoringEvent',
-		'network ' .. network:gsub(' ', const.spaceDelimiter)
-	)
+	local menuSettings = {
+		type = 'network',
+		network = network,
+	}
+	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
+	-- add_text_events_to_menu(
+	-- 	'Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '/',
+	-- 	eventsString,
+	-- 	'stopIgnoringEvent',
+	-- 	'network ' .. network:gsub(' ', const.spaceDelimiter)
+	-- )
 end
 
 local function remove_ignored_channel_menu(
