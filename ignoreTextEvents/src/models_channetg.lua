@@ -25,7 +25,13 @@ end
 function models_channetg.add_event(keyType, event, network, channel)
 	local previousValueTable =
 		models_channetg.get_events_array(keyType, network, channel)
-	table.insert(previousValueTable, event)
+	if previousValueTable ~= nil and next(
+		previousValueTable
+	) ~= nil and previousValueTable[1] ~= '' then
+		table.insert(previousValueTable, event)
+	else
+		previousValueTable = { event }
+	end
 	local newValue = db_utils.array_to_comma_delim_string(previousValueTable)
 	db.set_preference_valuestring(keyType, newValue, network, channel)
 end

@@ -11,6 +11,7 @@ local db = require'db.lua'
 
 local function add_text_events_to_menu(menu, eventsString, action, actionIdent)
 	local eventsArray = db_utils.comma_delim_string_to_array(eventsString)
+	print(util.dump(eventsArray))
 	for key, event in pairs(eventsArray) do
 		hexchat.command(
 			'menu -t1 add "' .. menu .. event .. '" "" "' .. action .. ' ' .. event:gsub(
@@ -24,6 +25,9 @@ end
 local function add_ignored_channel_menu(network, channel, eventsString)
 	hexchat.command(
 		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '"'
+	)
+	hexchat.command(
+		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '"'
 	)
 	add_text_events_to_menu(
 		'Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '/',
@@ -155,9 +159,9 @@ end
 
 function views.add_event(keyType, event, network, channel)
 	if keyType == 'network' then
-		views.add_ignored_network_menu(network, { event }) --TODO wtf table
+		add_ignored_network_menu(network, event) --TODO wtf table
 	elseif keyType == 'channel' then
-		views.add_ignored_channel_menu(network, channel, { event })
+		add_ignored_channel_menu(network, channel, event)
 	end
 end
 
@@ -169,13 +173,9 @@ keyType,
 	channel
 )
 	if keyType == 'network' then
-		views.remove_ignored_network_menu(
-			network,
-			updatedModelTextEventsTable,
-			event
-		)
+		remove_ignored_network_menu(network, updatedModelTextEventsTable, event)
 	elseif keyType == 'channel' then
-		views.remove_ignored_channel_menu(
+		remove_ignored_channel_menu(
 			network,
 			channel,
 			updatedModelTextEventsTable,

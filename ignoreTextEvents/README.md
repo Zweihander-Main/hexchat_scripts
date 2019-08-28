@@ -8,6 +8,10 @@ This only hooks the text events, not the server events themselves. This won't st
 
 This will kill/eat text events.
 
+Todo:
+
+-   Already added message
+
 ## Commands added
 
 ## Todo
