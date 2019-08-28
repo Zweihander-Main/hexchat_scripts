@@ -29,7 +29,8 @@ function db_utils.array_to_comma_delim_string(valueArray)
 end
 
 function db_utils.extract_keyType(key)
-	local locationOfFirstDelim = string.find(key, const.preferencesDelimiter)
+	local locationOfFirstDelim =
+		string.find(key, const.preferencesDelimiter, 0, true)
 	if locationOfFirstDelim then
 		return key:sub(
 			string.len(const.preferencesPrefix) + 1,

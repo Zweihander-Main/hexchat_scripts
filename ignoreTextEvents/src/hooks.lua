@@ -1,5 +1,10 @@
 local hooks = {}
 
+local te = require'models_textEvent.lua'
+local const = require'constants.lua'
+
+local hook_lookup_table = {}
+
 ----------------------------------------------------
 -- Hooks: Text event handlers
 ----------------------------------------------------
@@ -9,51 +14,80 @@ local function kill_event()
 end
 
 local function check_if_ignored(ignoredData)
-	-- if ignoredData.global == true then
-	-- 	return kill_event()
-	-- else
-	-- 	local network = hexchat.get_info('network')
-	-- 	if has_value(ignoredData.networks, network) then
-	-- 		return kill_event()
-	-- 	else
-	-- 		local channel = hexchat.get_info('channel')
-	-- 		if has_value(ignoredData.channels, channel) then
-	-- 			return kill_event()
-	-- 		end
-	-- 	end
-	-- end
+	if ignoredData.global == 'true' then
+		return kill_event()
+	else
+		local network = hexchat.get_info('network')
+		if has_value(ignoredData.networks, network) then
+			return kill_event()
+		else
+			local channel = hexchat.get_info('channel')
+			for i, channet in pairs(ignoredData.channets) do
+				if channet['channel'] == channel and channet['network'] == network then
+					return kill_event()
+				end
+			end
+		end
+	end
 end
 
-----------------------------------------------------
--- Hooks: Add/remove channels/networks/global
-----------------------------------------------------
--- Some way to create all the hooks when this loads up without having to do silly lookups
--- Performant way to add and remove
--- Added all preference above, remove if not using
--- Instead of using all, use textevent type
-
--- Store pointer to hook in global table in format te: pointer
--- Add = removes old pointer if exists, creates new one
--- Remove = removes old pointer, if anything left, creates new one, if not, end
---
-
-function hooks.add_event_hook(event, type, network, channel)
-	-- hexchat.hook_print(
-	-- 	'Channel Msg Hilight',
-	-- 	function()
-	-- 		local ignoredData = {
-	-- 			global = false,
-	-- 			networks = {},
-	-- 			channels = {},
-	-- 		}
-	-- 		return check_if_ignored(ignoredData)
-	-- 	end,
-	-- 	hexchat.PRI_HIGHEST
-	-- )
+local function create_hook(event, ignoredData)
+	return hexchat.hook_print(
+		event,
+		function()
+			return check_if_ignored(ignoredData)
+		end,
+		hexchat.PRI_HIGHEST
+	)
 end
 
-function hooks.remove_event_hook(event, type, network, channel)
-	--
+local function delete_hook(event)
+	hexchat.unhook(hook_lookup_table[event])
+	hook_lookup_table[event] = nil
+end
+
+function hooks.add_event_hook(keyType, event, network, channel)
+	if hook_lookup_table[event] then
+		delete_hook(event)
+	end
+	local ignoredData = te.get_event(keyType, event, network, channel)
+	hook_lookup_table[event] = create_hook(event, ignoredData)
+end
+
+function hooks.remove_event_hook(keyType, event, network, channel)
+	delete_hook(event)
+	local ignoredData = te.get_event(keyType, event, network, channel)
+	if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
+		hook_lookup_table[event] = create_hook(event, ignoredData)
+	end
+end
+
+function hooks.load_all_hooks()
+	local iterateOver = function(name, ignoredData)
+		if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
+			local delimStart, delimEnd =
+				string.find(name, const.preferencesDelimiter, 0, true)
+			if delimEnd then
+				local event = name:sub(delimEnd + 1)
+				hook_lookup_table[event] = create_hook(event, ignoredData)
+			end
+		end
+	end
+	te.iterate_over_lambda(iterateOver)
+end
+
+function hooks.reset()
+	for event, hook in pairs(hook_lookup_table) do
+		delete_hook(event)
+	end
+end
+
+function hooks.debug()
+	local printString = 'Enabled hooks: '
+	for event, hook in pairs(hook_lookup_table) do
+		printString = printString .. event .. ' '
+	end
+	print(printString)
 end
 
 return hooks

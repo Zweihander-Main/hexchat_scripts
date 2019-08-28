@@ -8,6 +8,8 @@ This only hooks the text events, not the server events themselves. This won't st
 
 This will kill/eat text events.
 
+DB get rid of in views/hooks?
+
 Todo:
 
 -   Already added message

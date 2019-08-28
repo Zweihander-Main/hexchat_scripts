@@ -7,8 +7,6 @@ local commandCallbacks = {}
 local util = require'utilities.lua'
 local const = require'constants.lua'
 local controller = require'controller.lua'
-local views = require'views.lua'
-local db = require'db.lua'
 
 -- Uses default context unless arguments supplied.
 -- Converts arguments if they're coming from menu
@@ -109,16 +107,14 @@ end
 
 -- Resets pluginprefs
 function commandCallbacks.reset_plugin_prefs_cb()
-	db.reset()
-	views.unload_menus()
-	views.load_menus()
+	controller.reset()
 	print('Ignore Text Events: Reset complete')
 	-- TODO version
 end
 
 -- Prints out hexchat.pluginprefs in human readable format
 function commandCallbacks.debug_plugin_prefs_cb()
-	print(util.dump(hexchat.pluginprefs))
+	controller.debug()
 end
 
 return commandCallbacks

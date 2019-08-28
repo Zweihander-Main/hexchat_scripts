@@ -2,6 +2,7 @@ local db = {}
 
 local db_utils = require'db_utils.lua'
 local const = require'constants.lua'
+local util = require'utilities.lua'
 
 -- Creates string corresponding to key in preferences
 --
@@ -38,6 +39,10 @@ function db.reset()
 	for a, b in pairs(hexchat.pluginprefs) do
 		hexchat.pluginprefs[a] = nil
 	end
+end
+
+function db.debug()
+	print(util.dump(hexchat.pluginprefs))
 end
 
 ----------------------------------------------------

@@ -45,6 +45,14 @@ function models_channetg.remove_event(keyType, event, network, channel)
 	return previousValueTable
 end
 
+function models_channetg.iterate_over_lambda(keyType, lambda)
+	local model_lambda = function(name, value)
+		local chanNetTable = db_utils.convert_key_to_table(name)
+		lambda(chanNetTable, value)
+	end
+	db.iterate_prefs_over_lambda(keyType, model_lambda)
+end
+
 --
 -- local function modelchannet_is_set_to_ignore_channet(event, network, channel)
 -- 	local currentNetworkIgnoredEvents =

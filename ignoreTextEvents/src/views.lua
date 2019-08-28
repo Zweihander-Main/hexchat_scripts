@@ -4,7 +4,7 @@ local channet = require'models_channetg.lua'
 local const = require'constants.lua'
 local util = require'utilities.lua'
 local db_utils = require'db_utils.lua'
-local db = require'db.lua'
+local models = require'models.lua'
 ----------------------------------------------------
 -- Views: Menu manipulation
 ----------------------------------------------------
@@ -82,13 +82,12 @@ network,
 		)
 	else
 		local networkShouldBeRemoved = true
-		local iterateOver = function(name, value)
-			local chanNetTable = db_utils.convert_key_to_table(name)
+		local iterateOver = function(chanNetTable, value)
 			if chanNetTable['network'] == network then
 				networkShouldBeRemoved = false
 			end
 		end
-		db.iterate_prefs_over_lambda(iterateOver)
+		channet.iterate_over_lambda('channel', iterateOver)
 		if networkShouldBeRemoved == true then
 			hexchat.command(
 				'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '"'
@@ -119,24 +118,22 @@ end
 
 -- Generated menu of channels with ignored text events from pluginprefs
 local function generate_currently_ignored_channel_menu()
-	local iterateOver = function(name, value)
-		local chanNetTable = db_utils.convert_key_to_table(name)
+	local iterateOver = function(chanNetTable, value)
 		add_ignored_channel_menu(
 			chanNetTable['network'],
 			chanNetTable['channel'],
 			value
 		)
 	end
-	db.iterate_prefs_over_lambda('channel', iterateOver)
+	channet.iterate_over_lambda('channel', iterateOver)
 end
 
 -- Generated menu of channels with ignored text events from pluginprefs
 local function generate_currently_ignored_network_menu()
-	local iterateOver = function(name, value)
-		local chanNetTable = db_utils.convert_key_to_table(name)
+	local iterateOver = function(chanNetTable, value)
 		add_ignored_network_menu(chanNetTable['network'], value)
 	end
-	db.iterate_prefs_over_lambda('network', iterateOver)
+	channet.iterate_over_lambda('network', iterateOver)
 end
 
 local function generate_context_menu(context)

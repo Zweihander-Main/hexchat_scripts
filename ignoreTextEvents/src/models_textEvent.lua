@@ -19,7 +19,7 @@ local const = require'constants.lua'
 -- gbool||||||n1,n3,n3||||||c1;;;;;;nc1,c2;;;;;;nc2,c3;;;;;;nc3
 ----------------------------------------------------
 
-local function convert_tevalue_to_table(value)
+function convert_tevalue_to_table(value)
 	local splitTable = util.split(value, const.preferencesDelimiter)
 	if #splitTable == 3 then
 		local formattedTable = {}
@@ -46,6 +46,7 @@ local function convert_tevalue_to_table(value)
 end
 
 local function convert_table_to_tevalue(valueTable)
+	print(util.dump(valueTable))
 	local returnString = ''
 	returnString =
 		returnString .. valueTable['global'] .. const.preferencesDelimiter
@@ -64,9 +65,15 @@ local function convert_table_to_tevalue(valueTable)
 	return returnString
 end
 
-function models_textEvent.add_event(keyType, event, network, channel)
+function models_textEvent.get_event(keyType, event, network, channel)
 	local prefValue = db.get_preference_valuestring('textevent', event)
 	local formattedTable = convert_tevalue_to_table(prefValue)
+	return formattedTable
+end
+
+function models_textEvent.add_event(keyType, event, network, channel)
+	local formattedTable =
+		models_textEvent.get_event(keyType, event, network, channel)
 	if keyType == 'global' then
 		formattedTable['global'] = 'true'
 	elseif keyType == 'network' then
@@ -82,8 +89,8 @@ function models_textEvent.add_event(keyType, event, network, channel)
 end
 
 function models_textEvent.remove_event(keyType, event, network, channel)
-	local prefValue = db.get_preference_valuestring('textevent', event)
-	local formattedTable = convert_tevalue_to_table(prefValue)
+	local formattedTable =
+		models_textEvent.get_event(keyType, event, network, channel)
 	if keyType == 'global' then
 		formattedTable['global'] = 'false'
 	elseif keyType == 'network' then
@@ -102,6 +109,14 @@ function models_textEvent.remove_event(keyType, event, network, channel)
 	end
 	local formattedTextEventValue = convert_table_to_tevalue(formattedTable)
 	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
+end
+
+function models_textEvent.iterate_over_lambda(lambda)
+	local model_lambda = function(name, value)
+		local ignoredData = convert_tevalue_to_table(value)
+		lambda(name, ignoredData)
+	end
+	db.iterate_prefs_over_lambda('textevent', model_lambda)
 end
 
 return models_textEvent

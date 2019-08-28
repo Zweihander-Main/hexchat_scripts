@@ -6,7 +6,7 @@ local constants = {}
 
 -- Delimiter variables. Changing preferences delimiter will invalidate preferences
 constants.spaceDelimiter = '_._._._'
-constants.preferencesDelimiter = '|-|-|-'
+constants.preferencesDelimiter = '|}|}|}'
 constants.preferencesSubDelimiter = ';>;<;>'
 -- Prefix for channel keys in preferences
 constants.preferencesPrefix = 'ignoreTextEvents_type:'
