@@ -65,15 +65,14 @@ local function convert_table_to_tevalue(valueTable)
 	return returnString
 end
 
-function models_textEvent.get_event(keyType, event, network, channel)
+function models_textEvent.get_event(event)
 	local prefValue = db.get_preference_valuestring('textevent', event)
 	local formattedTable = convert_tevalue_to_table(prefValue)
 	return formattedTable
 end
 
 function models_textEvent.add_event(keyType, event, network, channel)
-	local formattedTable =
-		models_textEvent.get_event(keyType, event, network, channel)
+	local formattedTable = models_textEvent.get_event(event)
 	if keyType == 'global' then
 		formattedTable['global'] = 'true'
 	elseif keyType == 'network' then
@@ -89,8 +88,8 @@ function models_textEvent.add_event(keyType, event, network, channel)
 end
 
 function models_textEvent.remove_event(keyType, event, network, channel)
-	local formattedTable =
-		models_textEvent.get_event(keyType, event, network, channel)
+	local formattedTable = models_textEvent.get_event(event)
+	print(util.dump(formattedTable))
 	if keyType == 'global' then
 		formattedTable['global'] = 'false'
 	elseif keyType == 'network' then

@@ -50,13 +50,13 @@ function hooks.add_event_hook(keyType, event, network, channel)
 	if hook_lookup_table[event] then
 		delete_hook(event)
 	end
-	local ignoredData = te.get_event(keyType, event, network, channel)
+	local ignoredData = te.get_event(event)
 	hook_lookup_table[event] = create_hook(event, ignoredData)
 end
 
 function hooks.remove_event_hook(keyType, event, network, channel)
 	delete_hook(event)
-	local ignoredData = te.get_event(keyType, event, network, channel)
+	local ignoredData = te.get_event(event)
 	if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
 		hook_lookup_table[event] = create_hook(event, ignoredData)
 	end
