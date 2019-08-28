@@ -27,11 +27,11 @@ local function callback_handler(word)
 	end
 	if word[4] then
 		returnArray['network'] =
-			util.trim(word[3]:gsub(const.spaceDelimiter, ' '))
+			util.trim(word[4]:gsub(const.spaceDelimiter, ' '))
 	end
 	if word[5] then
 		returnArray['channel'] =
-			util.trim(word[3]:gsub(const.spaceDelimiter, ' '))
+			util.trim(word[5]:gsub(const.spaceDelimiter, ' '))
 	end
 	return returnArray
 	-- TODO sanitize event against event list
