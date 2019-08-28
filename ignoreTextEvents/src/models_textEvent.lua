@@ -88,8 +88,8 @@ function models_textEvent.remove_event(keyType, event, network, channel)
 		formattedTable['global'] = 'false'
 	elseif keyType == 'network' then
 		table.remove(
-			formattedTable['network'],
-			util.find(formattedTable['network'], network)
+			formattedTable['networks'],
+			util.find(formattedTable['networks'], network)
 		)
 	else
 		table.remove(

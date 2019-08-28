@@ -39,22 +39,42 @@ end
 
 function commandCallbacks.start_ignoring_event_cb(word)
 	local infoArray = callback_handler(word)
-	controller.add_event(
-		infoArray['keyType'],
-		infoArray['event'],
-		infoArray['network'],
-		infoArray['channel']
-	)
+	if infoArray['keyType'] == 'channel' then
+		controller.add_event(
+			infoArray['keyType'],
+			infoArray['event'],
+			infoArray['network'],
+			infoArray['channel']
+		)
+	elseif infoArray['keyType'] == 'network' then
+		controller.add_event(
+			infoArray['keyType'],
+			infoArray['event'],
+			infoArray['network']
+		)
+	else
+		controller.add_event(infoArray['keyType'], infoArray['event'])
+	end
 end
 
 function commandCallbacks.stop_ignoring_event_cb(word)
 	local infoArray = callback_handler(word)
-	controller.remove_event(
-		infoArray['keyType'],
-		infoArray['event'],
-		infoArray['network'],
-		infoArray['channel']
-	)
+	if infoArray['keyType'] == 'channel' then
+		controller.remove_event(
+			infoArray['keyType'],
+			infoArray['event'],
+			infoArray['network'],
+			infoArray['channel']
+		)
+	elseif infoArray['keyType'] == 'network' then
+		controller.remove_event(
+			infoArray['keyType'],
+			infoArray['event'],
+			infoArray['network']
+		)
+	else
+		controller.remove_event(infoArray['keyType'], infoArray['event'])
+	end
 end
 
 function commandCallbacks.check_event_ignored_context_cb(word)

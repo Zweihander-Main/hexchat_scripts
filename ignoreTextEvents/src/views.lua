@@ -40,7 +40,6 @@ eventsString,
 		end
 
 		commandToAdd = commandToAdd .. '"'
-
 		hexchat.command(commandToAdd)
 	end
 end
@@ -58,16 +57,6 @@ local function add_ignored_channel_menu(network, channel, eventsString)
 		network = network,
 	}
 	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
-
-	-- add_text_events_to_menu(
-	-- 	'Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '/',
-	-- 	eventsString,
-	-- 	'stopIgnoringEvent',
-	-- 	'channel ' .. channel:gsub(
-	-- 		' ',
-	-- 		const.spaceDelimiter
-	-- 	) .. ' ' .. network:gsub(' ', const.spaceDelimiter)
-	-- )
 end
 
 local function add_ignored_network_menu(network, eventsString)
@@ -79,12 +68,6 @@ local function add_ignored_network_menu(network, eventsString)
 		network = network,
 	}
 	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
-	-- add_text_events_to_menu(
-	-- 	'Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '/',
-	-- 	eventsString,
-	-- 	'stopIgnoringEvent',
-	-- 	'network ' .. network:gsub(' ', const.spaceDelimiter)
-	-- )
 end
 
 local function remove_ignored_channel_menu(
@@ -181,7 +164,7 @@ local function generate_global_menu()
 		commandString =
 			commandString .. ' add "Settings/Ignore Text Events/Toggle Events Ignored Globally/' .. event .. '" '
 		commandString =
-			commandString .. '"startIgnoringEvent global ' .. formattedEvent .. '"'
+			commandString .. '"startIgnoringEvent global ' .. formattedEvent .. '" '
 		commandString =
 			commandString .. '"stopIgnoringEvent global ' .. formattedEvent .. '"'
 		hexchat.command(commandString)
