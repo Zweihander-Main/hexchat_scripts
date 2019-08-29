@@ -11,10 +11,8 @@ local util = require'utilities.lua'
 -- network name,
 -- (if channel) channel name
 -- =
--- list of text events TODO with comma splitter
+-- list of text events
 ----------------------------------------------------
-
--- TODO something wrong here, stopIgnoringEvent callback is somehow saved?
 
 function models_channetg.get_events_array(keyType, network, channel)
 	return db_utils.comma_delim_string_to_array(

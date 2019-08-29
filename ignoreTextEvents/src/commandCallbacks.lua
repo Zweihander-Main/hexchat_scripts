@@ -77,32 +77,17 @@ end
 
 function commandCallbacks.check_event_ignored_context_cb(word)
 	local infoArray = callback_handler(word)
-	-- if isSetToConvert(infoArray['channel'], infoArray['network']) then
-	-- 	print(
-	-- 		'Channel ',
-	-- 		infoArray['channel'],
-	-- 		' of network ',
-	-- 		infoArray['network'],
-	-- 		' is converting highlights to regular text events.'
-	-- 	)
-	-- else
-	-- 	print(
-	-- 		'Channel ',
-	-- 		infoArray['channel'],
-	-- 		' of network ',
-	-- 		infoArray['network'],
-	-- 		' is not converting highlights.'
-	-- 	)
-	-- end
+	-- Not implemented yet
 end
 
 function commandCallbacks.check_event_ignored_cb(word)
 	-- word[2] is event
+	-- Not implemented yet
 end
 
 function commandCallbacks.list_events_ignored_cb()
-	--
-	-- | Network | Channel | Event |
+	-- Not implemented yet
+	-- Some kind of table format
 end
 
 -- Resets pluginprefs

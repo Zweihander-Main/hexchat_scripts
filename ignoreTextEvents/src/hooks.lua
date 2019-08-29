@@ -2,6 +2,7 @@ local hooks = {}
 
 local te = require'models_textEvent.lua'
 local const = require'constants.lua'
+local util = require'utilities.lua'
 
 local hook_lookup_table = {}
 
@@ -18,7 +19,7 @@ local function check_if_ignored(ignoredData)
 		return kill_event()
 	else
 		local network = hexchat.get_info('network')
-		if has_value(ignoredData.networks, network) then
+		if util.has_value(ignoredData.networks, network) then
 			return kill_event()
 		else
 			local channel = hexchat.get_info('channel')

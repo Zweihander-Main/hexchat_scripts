@@ -8,18 +8,15 @@ This only hooks the text events, not the server events themselves. This won't st
 
 This will kill/eat text events.
 
-DB get rid of in views/hooks?
-
-Todo:
-
--   Already added message
-
 ## Commands added
 
 ## Todo
 
--   Preference format:
--   Figure out if unhighlight channels get_preference should return empty array
+-   Prevent adding the same event to the same context multiple times (return 'already added' message)
+-   Sanitize event input against possible text events
+-   Re-add version identifier upon reset
+-   Properly remove pluginpref keys by setting them to nil
+-   Confirm not going up against unhighlight -- if so, it's likely because of hooks being removed
 
 ## Available for Hire
 

@@ -4,7 +4,6 @@ local util = require'utilities.lua'
 local const = require'constants.lua'
 
 -- Splits string into array using comma delimiter
--- TODO: should the array have structure?
 --
 -- @param      eventsString  The events string to be split
 --

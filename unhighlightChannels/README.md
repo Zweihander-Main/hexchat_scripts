@@ -34,7 +34,8 @@ Will print out plugin preferences.
 
 ## Todo
 
--   Nothing as of now. Open to suggestions!
+-   Add in more performant hook design as found in ignoreTextEvents
+-   Break up file into modules
 
 ## Available for Hire
 
