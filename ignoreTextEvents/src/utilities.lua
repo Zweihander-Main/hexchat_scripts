@@ -22,14 +22,15 @@ end
 
 -- Returns an array-like table from a string s, splitting the string using delimiter
 function utilities.split(s, delimiter)
-	if delimiter == nil then
-		delimiter = '%s'
+	local result = {}
+	for match in (s .. delimiter):gmatch('(.-)' .. delimiter) do
+		table.insert(result, match)
 	end
-	local t = {}
-	for str in string.gmatch(s, '([^' .. delimiter .. ']+)') do
-		table.insert(t, s)
+	if (#result == 1 and result[1] == '') then
+		return {}
+	else
+		return result
 	end
-	return t
 end
 
 function utilities.join(tab, delimiter)
