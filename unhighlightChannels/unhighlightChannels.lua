@@ -58,14 +58,13 @@ end
 hexchat.pluginprefs['version'] = 'v' .. version
 
 -- Get pluginprefs value based on given network and channel strings
--- Returns empty table if not found
 local function get_channel_preference(channel, network)
 	local pref =
 		hexchat.pluginprefs[preferencesPrefix .. network .. preferencesDelimiter .. channel]
 	if pref then
 		return pref
 	end
-	return {}
+	return ''
 end
 
 -- Returns true if channel is set to convert highlights, false otherwise
