@@ -19,10 +19,16 @@ eventsString,
 			'menu -t1 add "Settings/Ignore Text Events/Events Currently Ignored In/'
 		if (menuSettings.type == 'channel') then
 			commandToAdd =
-				commandToAdd .. 'Channels/' .. menuSettings.network .. '/' .. menuSettings.channel .. '/'
+				commandToAdd .. 'Channels/' .. menuSettings.network:gsub(
+					'/',
+					'|'
+				) .. '/' .. menuSettings.channel:gsub('/', '|') .. '/'
 		else
 			commandToAdd =
-				commandToAdd .. 'Networks/' .. menuSettings.network .. '/'
+				commandToAdd .. 'Networks/' .. menuSettings.network:gsub(
+					'/',
+					'|'
+				) .. '/'
 		end
 
 		commandToAdd =
@@ -46,10 +52,16 @@ end
 
 local function add_ignored_channel_menu(network, channel, eventsString)
 	hexchat.command(
-		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '"'
+		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
+			'/',
+			'|'
+		) .. '"'
 	)
 	hexchat.command(
-		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '"'
+		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
+			'/',
+			'|'
+		) .. '/' .. channel:gsub('/', '|') .. '"'
 	)
 	local menuSettings = {
 		type = 'channel',
@@ -61,7 +73,10 @@ end
 
 local function add_ignored_network_menu(network, eventsString)
 	hexchat.command(
-		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '"'
+		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network:gsub(
+			'/',
+			'|'
+		) .. '"'
 	)
 	local menuSettings = {
 		type = 'network',
@@ -76,25 +91,34 @@ network,
 	textEventsArray,
 	event
 )
-	if #textEventsArray > 1 then
+	if #textEventsArray > 0 then
 		hexchat.command(
-			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '/' .. event .. '"'
+			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
+				'/',
+				'|'
+			) .. '/' .. channel:gsub('/', '|') .. '/' .. event .. '"'
 		)
 	else
 		local networkShouldBeRemoved = true
 		local iterateOver = function(chanNetTable, value)
-			if chanNetTable['network'] == network then
+			if chanNetTable['network'] == network and value ~= nil and value ~= '' then
 				networkShouldBeRemoved = false
 			end
 		end
 		channet.iterate_over_lambda('channel', iterateOver)
 		if networkShouldBeRemoved == true then
 			hexchat.command(
-				'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '"'
+				'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
+					'/',
+					'|'
+				) .. '"'
 			)
 		else
 			hexchat.command(
-				'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network .. '/' .. channel .. '"'
+				'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
+					'/',
+					'|'
+				) .. '/' .. channel:gsub('/', '|') .. '"'
 			)
 		end
 	end
@@ -103,11 +127,17 @@ end
 local function remove_ignored_network_menu(network, textEventsArray, event)
 	if #textEventsArray > 1 then
 		hexchat.command(
-			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '/' .. event .. '"'
+			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network:gsub(
+				'/',
+				'|'
+			) .. '/' .. event .. '"'
 		)
 	else
 		hexchat.command(
-			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network .. '"'
+			'menu del "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network:gsub(
+				'/',
+				'|'
+			) .. '"'
 		)
 	end
 end
@@ -174,7 +204,7 @@ end
 
 function views.add_event(keyType, event, network, channel)
 	if keyType == 'network' then
-		add_ignored_network_menu(network, event) --TODO wtf table
+		add_ignored_network_menu(network, event)
 	elseif keyType == 'channel' then
 		add_ignored_channel_menu(network, channel, event)
 	end
