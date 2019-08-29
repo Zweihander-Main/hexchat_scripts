@@ -105,6 +105,9 @@ function models_textEvent.remove_event(keyType, event, network, channel)
 		)
 	end
 	local formattedTextEventValue = convert_table_to_tevalue(formattedTable)
+	if formattedTextEventValue == ('false' .. const.preferencesDelimiter .. const.preferencesDelimiter) then
+		formattedTextEventValue = nil
+	end
 	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
 end
 

@@ -13,10 +13,8 @@ This will kill/eat text events.
 ## Todo
 
 -   Prevent adding the same event to the same context multiple times (return 'already added' message)
--   Sanitize event input against possible text events
+-   Sanitize event input against possible pre-programmed text events
 -   Re-add version identifier upon reset
--   Properly remove pluginpref keys by setting them to nil
--   Confirm not going up against unhighlight -- if so, it's likely because of hooks being removed
 
 ## Available for Hire
 

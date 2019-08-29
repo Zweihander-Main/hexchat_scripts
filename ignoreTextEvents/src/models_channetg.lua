@@ -39,6 +39,9 @@ function models_channetg.remove_event(keyType, event, network, channel)
 		models_channetg.get_events_array(keyType, network, channel)
 	table.remove(previousValueTable, util.find(previousValueTable, event))
 	local newValue = db_utils.array_to_comma_delim_string(previousValueTable)
+	if newValue == '' then
+		newValue = nil
+	end
 	db.set_preference_valuestring(keyType, newValue, network, channel)
 	return previousValueTable
 end
