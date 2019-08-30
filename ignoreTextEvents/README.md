@@ -8,12 +8,15 @@ This only hooks the text events, not the server events themselves. This won't st
 
 This will kill/eat text events.
 
+Example use cases:
+'Gives voice to'
+
 ## Commands added
 
 ## Todo
 
 -   Prevent adding the same event to the same context multiple times (return 'already added' message)
--   Sanitize event input against possible pre-programmed text events
+-   Sanitize event input against possible pre-programmed text events (may prevent custom text events however)
 -   Re-add version identifier upon reset
 
 ## Available for Hire

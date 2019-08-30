@@ -35,12 +35,12 @@ hexchat.hook_command(
 hexchat.hook_command(
 	'checkEventIgnoredAtContext',
 	callbacks.check_event_ignored_context_cb,
-	'Usage: checkEventIgnored type event [network] [channel]\n\tChecks if given event is ignored for given context. Will use current context for any missing arguments.'
+	'Usage: checkEventIgnoredAtContext type event [network] [channel]\n\tChecks if given event is ignored for given context. Will use current context for any missing arguments.'
 )
 hexchat.hook_command(
 	'checkEventIgnored',
 	callbacks.check_event_ignored_cb,
-	'Usage: checkEventIgnored event\n\tChecks if given event is ignored at all. Will use current context for any missing arguments.'
+	'Usage: checkEventIgnored event\n\tChecks if given event is ignored at all.'
 )
 hexchat.hook_command(
 	'listEventsIgnored',

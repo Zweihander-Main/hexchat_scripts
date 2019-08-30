@@ -47,31 +47,30 @@ local function delete_hook(event)
 	hook_lookup_table[event] = nil
 end
 
+function hooks.get_event_data(event)
+	return te.get_event(event)
+end
+
 function hooks.add_event_hook(keyType, event, network, channel)
 	if hook_lookup_table[event] then
 		delete_hook(event)
 	end
-	local ignoredData = te.get_event(event)
+	local ignoredData = hooks.get_event_data(event)
 	hook_lookup_table[event] = create_hook(event, ignoredData)
 end
 
 function hooks.remove_event_hook(keyType, event, network, channel)
 	delete_hook(event)
-	local ignoredData = te.get_event(event)
+	local ignoredData = hooks.get_event_data(event)
 	if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
 		hook_lookup_table[event] = create_hook(event, ignoredData)
 	end
 end
 
 function hooks.load_all_hooks()
-	local iterateOver = function(name, ignoredData)
+	local iterateOver = function(event, ignoredData)
 		if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
-			local delimStart, delimEnd =
-				string.find(name, const.preferencesDelimiter, 0, true)
-			if delimEnd then
-				local event = name:sub(delimEnd + 1)
-				hook_lookup_table[event] = create_hook(event, ignoredData)
-			end
+			hook_lookup_table[event] = create_hook(event, ignoredData)
 		end
 	end
 	te.iterate_over_lambda(iterateOver)

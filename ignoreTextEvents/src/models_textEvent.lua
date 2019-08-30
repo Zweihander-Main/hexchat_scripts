@@ -113,8 +113,11 @@ end
 
 function models_textEvent.iterate_over_lambda(lambda)
 	local model_lambda = function(name, value)
+		local delimStart, delimEnd =
+			string.find(name, const.preferencesDelimiter, 0, true)
+		local event = name:sub(delimEnd + 1)
 		local ignoredData = convert_tevalue_to_table(value)
-		lambda(name, ignoredData)
+		lambda(event, ignoredData)
 	end
 	db.iterate_prefs_over_lambda('textevent', model_lambda)
 end

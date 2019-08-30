@@ -28,8 +28,8 @@ function models.debug()
 	db.debug()
 end
 
-function models.iterate_over_lambda(keyType, lambda)
-	db.iterate_prefs_over_lambda(keyType, lambda)
+function models.iterate_over_all_event_data(lambda)
+	te.iterate_over_lambda(lambda)
 end
 
 return models

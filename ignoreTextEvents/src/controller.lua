@@ -44,4 +44,12 @@ function controller.debug()
 	hooks.debug()
 end
 
+function controller.get_event_data(event)
+	return hooks.get_event_data(event)
+end
+
+function controller.iterate_over_all_event_data(lambda)
+	models.iterate_over_all_event_data(lambda)
+end
+
 return controller

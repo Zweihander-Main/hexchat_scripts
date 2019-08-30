@@ -37,21 +37,47 @@ end
 
 function commandCallbacks.start_ignoring_event_cb(word)
 	local infoArray = callback_handler(word)
-	if infoArray['keyType'] == 'channel' then
-		controller.add_event(
-			infoArray['keyType'],
-			infoArray['event'],
-			infoArray['network'],
-			infoArray['channel']
-		)
-	elseif infoArray['keyType'] == 'network' then
-		controller.add_event(
-			infoArray['keyType'],
-			infoArray['event'],
-			infoArray['network']
-		)
+	local alreadyExists = false
+	local iterateOver = function(event, ignoredData)
+		if event == infoArray['event'] then
+			if infoArray['keyType'] == 'global' and ignoredData['global'] == 'true' then
+				alreadyExists = true
+			elseif infoArray['keyType'] == 'network' and #ignoredData['networks'] > 0 then
+				if util.has_value(
+					ignoredData.networks,
+					infoArray['network']
+				) then
+					alreadyExists = true
+				end
+			elseif infoArray['keyType'] == 'channel' and #ignoredData['channets'] > 0 then
+				for i, channet in pairs(ignoredData.channets) do
+					if channet['channel'] == infoArray['channel'] and channet['network'] == infoArray['network'] then
+						alreadyExists = true
+					end
+				end
+			end
+		end
+	end
+	controller.iterate_over_all_event_data(iterateOver)
+	if alreadyExists == false then
+		if infoArray['keyType'] == 'channel' then
+			controller.add_event(
+				infoArray['keyType'],
+				infoArray['event'],
+				infoArray['network'],
+				infoArray['channel']
+			)
+		elseif infoArray['keyType'] == 'network' then
+			controller.add_event(
+				infoArray['keyType'],
+				infoArray['event'],
+				infoArray['network']
+			)
+		else
+			controller.add_event(infoArray['keyType'], infoArray['event'])
+		end
 	else
-		controller.add_event(infoArray['keyType'], infoArray['event'])
+		print('Event is already being ignored on this context.')
 	end
 end
 
@@ -77,17 +103,103 @@ end
 
 function commandCallbacks.check_event_ignored_context_cb(word)
 	local infoArray = callback_handler(word)
-	-- Not implemented yet
+	local ignoredData = controller.get_event_data(infoArray['event'])
+	if infoArray['keyType'] == 'global' then
+		if ignoredData.global == 'true' then
+			print(infoArray['event'] .. ' is ignored globally.')
+		else
+			print(infoArray['event'] .. ' is not ignored globally.')
+		end
+	elseif infoArray['keyType'] == 'network' then
+		if util.has_value(ignoredData.networks, infoArray['network']) then
+			print(infoArray['event'] .. ' is ignored on this network.')
+		else
+			print(infoArray['event'] .. ' is not ignored on this network.')
+		end
+	elseif infoArray['keyType'] == 'channel' then
+		local printString = ''
+		if #ignoredData.channets > 0 then
+			for i, channet in pairs(ignoredData.channets) do
+				if channet['channel'] == infoArray['channel'] and channet['network'] == infoArray['network'] then
+					printString =
+						printString .. infoArray['event'] .. ' is ignored on this channel.'
+				end
+			end
+		end
+		if (printString ~= '') then
+			print(printString)
+		else
+			print(infoArray['event'] .. ' is not ignored on this channel.')
+		end
+	else
+		print(
+			'Invalid context type given. Possible values are global, network, or channel.'
+		)
+	end
 end
 
 function commandCallbacks.check_event_ignored_cb(word)
-	-- word[2] is event
-	-- Not implemented yet
+	local ignoredData = controller.get_event_data(word[2])
+	if ignoredData.global == 'true' then
+		print(word[2] .. ' is ignored globally.')
+	else
+		if #ignoredData.networks > 0 then
+			local printString =
+				word[2] .. ' is ignored on the following networks: '
+			for i, network in pairs(ignoredData.networks) do
+				printString = printString .. network .. ', '
+			end
+		elseif #ignoredData.channets > 0 then
+			local printString =
+				word[2] .. ' is ignored on the following channels: '
+			for i, channet in pairs(ignoredData.channets) do
+				printString =
+					printString .. channet['channel'] .. ' on ' .. channet['network'] .. ', '
+			end
+		else
+			print(word[2] .. ' is not ignored')
+		end
+	end
 end
 
 function commandCallbacks.list_events_ignored_cb()
-	-- Not implemented yet
-	-- Some kind of table format
+	print('>---------------v--------v---------------------------------<')
+	print('|event__________|context_|location_________________________|')
+	local iterateOver = function(event, ignoredData)
+		if ignoredData.global == 'true' then
+			print(
+				'|' .. util.length_format(
+					event,
+					15
+				) .. '|global  |' .. util.length_format('', 33) .. '|'
+			)
+		end
+		if #ignoredData.networks > 0 then
+			for i, network in pairs(ignoredData.networks) do
+				print(
+					'|' .. util.length_format(
+						event,
+						15
+					) .. '|network |' .. util.length_format(network, 33) .. '|'
+				)
+			end
+		end
+		if #ignoredData.channets > 0 then
+			for i, channet in pairs(ignoredData.channets) do
+				print(
+					'|' .. util.length_format(
+						event,
+						15
+					) .. '|channel |' .. util.length_format(
+						channet['channel'] .. '>' .. channet['network'],
+						33
+					) .. '|'
+				)
+			end
+		end
+	end
+	controller.iterate_over_all_event_data(iterateOver)
+	print('>---------------^--------^---------------------------------<')
 end
 
 -- Resets pluginprefs

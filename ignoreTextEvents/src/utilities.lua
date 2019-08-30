@@ -53,7 +53,7 @@ function utilities.has_value(tab, val)
 end
 
 -- https://bitbucket.org/snippets/marcotrosi/XnyRj/lua-isequal
-local function isEqualForTables(tab1, tab2)
+local function is_equal_for_tables(tab1, tab2)
 	if tab1 == tab2 then
 		return true
 	end
@@ -63,7 +63,7 @@ local function isEqualForTables(tab1, tab2)
 		end
 
 		if type(tab1[key]) == 'table' then
-			if not isEqualForTables(tab1[key], tab2[key]) then
+			if not is_equal_for_tables(tab1[key], tab2[key]) then
 				return false
 			end
 		else
@@ -78,7 +78,7 @@ local function isEqualForTables(tab1, tab2)
 		end
 
 		if type(tab2[key]) == 'table' then
-			if not isEqualForTables(tab2[key], tab1[key]) then
+			if not is_equal_for_tables(tab2[key], tab1[key]) then
 				return false
 			end
 		else
@@ -94,7 +94,7 @@ end
 function utilities.find(tab, valueToFind)
 	for i, v in pairs(tab) do
 		if type(v) == 'table' then
-			if isEqualForTables(v, valueToFind) then
+			if is_equal_for_tables(v, valueToFind) then
 				return i
 			end
 		elseif v == valueToFind then
@@ -102,6 +102,19 @@ function utilities.find(tab, valueToFind)
 		end
 	end
 	return nil
+end
+
+function utilities.length_format(str, len)
+	if (#str == len) then
+		return str
+	elseif (#str > len) then
+		return string.sub(str, 0, len)
+	else
+		for i = len - #str, 1, -1 do
+			str = str .. ' '
+		end
+		return str
+	end
 end
 
 return utilities
