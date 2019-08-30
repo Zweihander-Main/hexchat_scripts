@@ -5,6 +5,7 @@ Each folder contains a different script for HexChat as well as a README describi
 ## List of Scripts
 
 [Unhighlight Channels](./unhighlightChannels/) -- converts highlights from user-selected channels to regular non-highlighted text events
+
 [Ignore Text Events](./ignoreTextEvents/) -- allows a user to remove text events from a given channel, network, or global context
 
 ## Installation
@@ -15,7 +16,7 @@ For installation: `Window` > `Plugins and Scripts` will allow you to load and un
 
 Run `make` on the top level directory (where this README is located). Currently used by scripts which use modules to compress them into one flat file. This will take the modules in the `./script/src` directory and output them to `./script/build`.
 
-Credits to https://gist.github.com/turtleDev/a54a61a14e4a438f893865843279fd40 for the included pack.lua script that enables this.
+Credits to https://gist.github.com/turtleDev/a54a61a14e4a438f893865843279fd40 for the included `pack.lua` script that enables this.
 
 ## Todo
 

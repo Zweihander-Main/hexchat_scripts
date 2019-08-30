@@ -15,9 +15,9 @@ You can figure out which event you want to target by correlating the message you
 
 ## Installation
 
-You will want to use the (single flat file in the build directory)[https://github.com/Zweihander-Main/hexchat_scripts/blob/master/ignoreTextEvents/build/ignoreTextEvents.lua].
+You will want to use the [single flat file in the build directory](https://github.com/Zweihander-Main/hexchat_scripts/blob/master/ignoreTextEvents/build/ignoreTextEvents.lua).
 
-More information on the (top level README)[https://github.com/Zweihander-Main/hexchat_scripts#installation] as well as the (official documentation)[https://hexchat.readthedocs.io/en/latest/faq.html#how-do-i-auto-load-scripts-at-startup].
+More information on the [top level README](https://github.com/Zweihander-Main/hexchat_scripts#installation) as well as the [official documentation](https://hexchat.readthedocs.io/en/latest/faq.html#how-do-i-auto-load-scripts-at-startup).
 
 ## Commands added
 
@@ -66,12 +66,12 @@ Limitations in the HexChat pluginprefs interface led to a lot of the decisions t
 
 ## Building
 
-See (the top level README file)[https://github.com/Zweihander-Main/hexchat_scripts#Building]
+See [the top level README file](https://github.com/Zweihander-Main/hexchat_scripts#building)
 
 ## Todo
 
 -   Sanitize event input against possible pre-programmed text events (may prevent custom text events however)
--   Refactor model_channetg iteration to convert value into array-like table
+-   Refactor `model_channetg` iteration to convert value into array-like table
 
 ## Available for Hire
 
