@@ -37,7 +37,7 @@ hexchat.hook_command(
 hexchat.hook_command(
 	'checkEventIgnored',
 	callbacks.check_event_ignored_cb,
-	'Usage: checkEventIgnored event\n\tChecks if given event is ignored at all.'
+	'Usage: checkEventIgnored event\n\tChecks if given event is ignored at all and if so, where?'
 )
 hexchat.hook_command(
 	'listEventsIgnored',
@@ -52,7 +52,7 @@ hexchat.hook_command(
 hexchat.hook_command(
 	'debugIgnoreTextEvents',
 	callbacks.debug_plugin_prefs_cb,
-	'Usage: debugIgnoreTextEvents\n\tWill print out plugin preferences.'
+	'Usage: debugIgnoreTextEvents\n\tWill print out plugin preferences and currently enabled hooks.'
 )
 
 controller.set_version(version)
