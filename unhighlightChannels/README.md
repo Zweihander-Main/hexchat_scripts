@@ -36,6 +36,7 @@ Will print out plugin preferences.
 
 -   Add in more performant hook design as found in ignoreTextEvents
 -   Break up file into modules
+-   Create method to list all affected channels in table
 
 ## Available for Hire
 

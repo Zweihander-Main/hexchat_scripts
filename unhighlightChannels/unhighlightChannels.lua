@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '1.1.6'
+local version = '1.1.7'
 
 hexchat.register(
 	'Unhighlight Channels',

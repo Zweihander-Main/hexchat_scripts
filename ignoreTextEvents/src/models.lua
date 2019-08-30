@@ -32,4 +32,8 @@ function models.iterate_over_all_event_data(lambda)
 	te.iterate_over_lambda(lambda)
 end
 
+function models.set_version(version)
+	db.set_version(version)
+end
+
 return models

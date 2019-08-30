@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: MIT
-local version = '0.0.1'
+local version = '1.0.0'
 
 hexchat.register(
 	'Ignore Text Events',
@@ -14,9 +14,8 @@ end
 
 local controller = require'controller.lua'
 local callbacks = require'commandCallbacks.lua'
-local db = require'db.lua'
 
-db.set_version(version)
+controller.set_version(version)
 
 ----------------------------------------------------
 -- Command hooks
@@ -57,21 +56,5 @@ hexchat.hook_command(
 	callbacks.debug_plugin_prefs_cb,
 	'Usage: debugIgnoreTextEvents\n\tWill print out plugin preferences.'
 )
-
-----------------------------------------------------
--- Text event hooks
-----------------------------------------------------
-
--- Hook and unhook when loading and when calling commands
--- Hook should already have the type of hook pushed into it (global, network, channel)
--- Should store list of networks and channels and also push those
--- Massive table object
-
--- Improve unhighlight with event hook/unhook method
--- Improve unhighlight with list channels
-
-----------------------------------------------------
--- Init
-----------------------------------------------------
 
 controller.init()

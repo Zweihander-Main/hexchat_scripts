@@ -15,9 +15,7 @@ Example use cases:
 
 ## Todo
 
--   Prevent adding the same event to the same context multiple times (return 'already added' message)
 -   Sanitize event input against possible pre-programmed text events (may prevent custom text events however)
--   Re-add version identifier upon reset
 
 ## Available for Hire
 
