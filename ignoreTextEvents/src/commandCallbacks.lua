@@ -1,15 +1,17 @@
-----------------------------------------------------
--- Command callbacks
-----------------------------------------------------
-
 local commandCallbacks = {}
 
 local util = require'utilities.lua'
 local const = require'constants.lua'
 local controller = require'controller.lua'
 
--- Uses default context unless arguments supplied.
--- Converts arguments if they're coming from menu
+-- Uses default context unless arguments supplied. Converts arguments if they're
+-- coming from menu.
+--
+-- @param      word  The input array from the command
+--
+-- @return     {'keyType' = string,'event' = string,'network' = string,'channel'
+--             = string}
+--
 local function callback_handler(word)
 	local returnArray = {
 		channel = hexchat.get_info('channel'),
@@ -32,9 +34,14 @@ local function callback_handler(word)
 			util.trim(word[5]:gsub(const.spaceDelimiter, ' '))
 	end
 	return returnArray
-	-- TODO sanitize event against event list
 end
 
+--!
+--! @brief      Start ignoring an event. Checks if it already exists, if not
+--!             sends it to the controller to add.
+--!
+--! @param      word  Command data
+--!
 function commandCallbacks.start_ignoring_event_cb(word)
 	local infoArray = callback_handler(word)
 	local alreadyExists = false
@@ -81,6 +88,11 @@ function commandCallbacks.start_ignoring_event_cb(word)
 	end
 end
 
+--!
+--! @brief      Stops ignoring an already ignored event.
+--!
+--! @param      word  Command data
+--!
 function commandCallbacks.stop_ignoring_event_cb(word)
 	local infoArray = callback_handler(word)
 	if infoArray['keyType'] == 'channel' then
@@ -101,6 +113,11 @@ function commandCallbacks.stop_ignoring_event_cb(word)
 	end
 end
 
+--!
+--! @brief      Check if an event is ignored in the given context
+--!
+--! @param      word  Command data
+--!
 function commandCallbacks.check_event_ignored_context_cb(word)
 	local infoArray = callback_handler(word)
 	local ignoredData = controller.get_event_data(infoArray['event'])
@@ -138,6 +155,11 @@ function commandCallbacks.check_event_ignored_context_cb(word)
 	end
 end
 
+--!
+--! @brief      Checks if an event is ignored and if so, where?
+--!
+--! @param      word  Command data
+--!
 function commandCallbacks.check_event_ignored_cb(word)
 	local ignoredData = controller.get_event_data(word[2])
 	if ignoredData.global == 'true' then
@@ -162,6 +184,10 @@ function commandCallbacks.check_event_ignored_cb(word)
 	end
 end
 
+--!
+--! @brief      Lists all ignored events and where they are ignored in a
+--!             human-readable format
+--!
 function commandCallbacks.list_events_ignored_cb()
 	print('>---------------v--------v---------------------------------<')
 	print('|event__________|context_|location_________________________|')
@@ -206,10 +232,9 @@ end
 function commandCallbacks.reset_plugin_prefs_cb()
 	controller.reset()
 	print('Ignore Text Events: Reset complete')
-	-- TODO version
 end
 
--- Prints out hexchat.pluginprefs in human readable format
+-- Prints out hexchat.pluginprefs and what hooks are enabled
 function commandCallbacks.debug_plugin_prefs_cb()
 	controller.debug()
 end

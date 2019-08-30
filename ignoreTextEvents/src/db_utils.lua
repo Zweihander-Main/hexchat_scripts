@@ -27,6 +27,14 @@ function db_utils.array_to_comma_delim_string(valueArray)
 	return returnString
 end
 
+--!
+--! @brief      Takes key from database and extracts the keyType
+--!             (channel/network/global)
+--!
+--! @param      key   The key from the database
+--!
+--! @return     String or nil if not found
+--!
 function db_utils.extract_keyType(key)
 	local locationOfFirstDelim =
 		string.find(key, const.preferencesDelimiter, 0, true)
@@ -40,6 +48,13 @@ function db_utils.extract_keyType(key)
 	end
 end
 
+--!
+--! @brief      Converts a database key into a more workable table
+--!
+--! @param      key   The key from the database
+--!
+--! @return     {keyType = string, textevent/network/channel = string}
+--!
 function db_utils.convert_key_to_table(key)
 	local keyType = db_utils.extract_keyType(key)
 	local keyArray = util.split(key, const.preferencesDelimiter)

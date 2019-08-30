@@ -1,7 +1,3 @@
-----------------------------------------------------
--- Preferences/constants
-----------------------------------------------------
-
 local constants = {}
 
 -- Delimiter variables. Changing preferences delimiter will invalidate preferences

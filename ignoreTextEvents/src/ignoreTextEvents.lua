@@ -15,8 +15,6 @@ end
 local controller = require'controller.lua'
 local callbacks = require'commandCallbacks.lua'
 
-controller.set_version(version)
-
 ----------------------------------------------------
 -- Command hooks
 ----------------------------------------------------
@@ -57,4 +55,5 @@ hexchat.hook_command(
 	'Usage: debugIgnoreTextEvents\n\tWill print out plugin preferences.'
 )
 
+controller.set_version(version)
 controller.init()

@@ -5,10 +5,18 @@ local const = require'constants.lua'
 local util = require'utilities.lua'
 local db_utils = require'db_utils.lua'
 local models = require'models.lua'
+
 ----------------------------------------------------
 -- Views: Menu manipulation
 ----------------------------------------------------
 
+--!
+--! @brief      Adds a text event to an already created menu.
+--!
+--! @param      eventsString  The event or comma delim string of events
+--! @param      menuSettings  {type=channel/network,network=string,
+--!                           (channel)=string}
+--!
 local function add_text_events_to_currently_ignored_in_menu(
 eventsString,
 	menuSettings
@@ -50,6 +58,15 @@ eventsString,
 	end
 end
 
+--!
+--! @brief      Adds a currently ignored in > network > channel > event item
+--!
+--! @param      network       The network the channel is in
+--! @param      channel       The channel to ignore
+--! @param      eventsString  The event string (or multiple events comma delim)
+--!
+--! @return     { description_of_the_return_value }
+--!
 local function add_ignored_channel_menu(network, channel, eventsString)
 	hexchat.command(
 		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
@@ -71,6 +88,12 @@ local function add_ignored_channel_menu(network, channel, eventsString)
 	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
 end
 
+--!
+--! @brief      Adds a currently ignored in > network > event menu item toggle
+--!
+--! @param      network       The network to ignore
+--! @param      eventsString  The event string (or multiple events comma delim)
+--!
 local function add_ignored_network_menu(network, eventsString)
 	hexchat.command(
 		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network:gsub(
@@ -85,6 +108,18 @@ local function add_ignored_network_menu(network, eventsString)
 	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
 end
 
+--!
+--! @brief      Removes an event from the currently ignored in > network >
+--!             channel menu. Will remove the channel entirely if no other
+--!             events present. Will remove the network entirely if no other
+--!             channels present.
+--!
+--! @param      network          The network the channel is located in
+--! @param      channel          The channel string
+--! @param      textEventsArray  The array like table of currently ignored text
+--!                              events in the network
+--! @param      event            The event string
+--!
 local function remove_ignored_channel_menu(
 network,
 	channel,
@@ -124,6 +159,15 @@ network,
 	end
 end
 
+--!
+--! @brief      Removes an event from the currently ignored in > network menu.
+--!             Will remove the network entirely if no other events present.
+--!
+--! @param      network          The network
+--! @param      textEventsArray  The array like table of currently ignored text
+--!                              events in the network
+--! @param      event            The event string
+--!
 local function remove_ignored_network_menu(network, textEventsArray, event)
 	if #textEventsArray > 1 then
 		hexchat.command(
@@ -166,6 +210,11 @@ local function generate_currently_ignored_network_menu()
 	channet.iterate_over_lambda('network', iterateOver)
 end
 
+--!
+--! @brief      Generate menu with all text events added for given context
+--!
+--! @param      context  The context -- String Channel or Network
+--!
 local function generate_context_menu(context)
 	for key, event in pairs(const.listOfTextEvents) do
 		local formattedEvent = event:gsub(' ', const.spaceDelimiter)
@@ -202,6 +251,14 @@ end
 -- Views: add/remove event
 ----------------------------------------------------
 
+--!
+--! @brief      Adds an event to the currently ignored menu.
+--!
+--! @param      keyType  The context to ignore in: global, network, channel
+--! @param      event    The textevent to ignore
+--! @param      network  (Optional) The network to ignore in
+--! @param      channel  (Optional) The channel to ignore in
+--!
 function views.add_event(keyType, event, network, channel)
 	if keyType == 'network' then
 		add_ignored_network_menu(network, event)
@@ -210,6 +267,18 @@ function views.add_event(keyType, event, network, channel)
 	end
 end
 
+--!
+--! @brief      Removes an event from the currently ignored menu.
+--!
+--! @param      keyType  The context to ignore in: global, network, channel
+--! @param      updatedModelTextEventsTable  Array like table of events still
+--! 										 being ignored in current context.
+--! @param      event    The textevent to ignore
+--! @param      network  (Optional) The network to ignore in
+--! @param      channel  (Optional) The channel to ignore in
+--!
+--! @return     { description_of_the_return_value }
+--!
 function views.remove_event(
 keyType,
 	updatedModelTextEventsTable,
@@ -233,7 +302,7 @@ end
 -- Views: Menu init and unloading
 ----------------------------------------------------
 
--- Loads all the menus
+-- Loads all the menus at application start.
 function views.load_menus()
 	hexchat.command('menu add "Settings/Ignore Text Events"')
 
@@ -267,7 +336,7 @@ function views.load_menus()
 	generate_global_menu()
 end
 
--- Unload handler
+-- Unload handler -- will delete all menus.
 function views.unload_menus()
 	hexchat.command('menu del "Settings/Ignore Text Events"')
 end

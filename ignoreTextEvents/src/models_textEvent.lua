@@ -19,7 +19,15 @@ local const = require'constants.lua'
 -- gbool||||||n1,n3,n3||||||c1;;;;;;nc1,c2;;;;;;nc2,c3;;;;;;nc3
 ----------------------------------------------------
 
-function convert_tevalue_to_table(value)
+--!
+--! @brief      Convert textevent model database value into table
+--!
+--! @param      value  The database value -- see info above
+--!
+--! @return     {global=string,networks=[string],channets=[{channel=string,
+--! 			network=string}]}
+--!
+local function convert_tevalue_to_table(value)
 	local splitTable = util.split(value, const.preferencesDelimiter)
 	if #splitTable == 3 then
 		local formattedTable = {}
@@ -45,6 +53,15 @@ function convert_tevalue_to_table(value)
 	end
 end
 
+--!
+--! @brief      Opposite operation of above function -- output from above
+--!             function into a value for storing in the database
+--!
+--! @param      valueTable  The value table generated from
+--!                         convert_tevalue_to_table
+--!
+--! @return     String, the database value -- see info above
+--!
 local function convert_table_to_tevalue(valueTable)
 	local returnString = ''
 	returnString =
@@ -64,12 +81,28 @@ local function convert_table_to_tevalue(valueTable)
 	return returnString
 end
 
+--!
+--! @brief      Returns info table about event in database
+--!
+--! @param      event  The event string
+--!
+--! @return     {global=string,networks=[string],channets=[{channel=string,
+--! 			network=string}]}
+--!
 function models_textEvent.get_event(event)
 	local prefValue = db.get_preference_valuestring('textevent', event)
 	local formattedTable = convert_tevalue_to_table(prefValue)
 	return formattedTable
 end
 
+--!
+--! @brief      Adds an event to the models_textEvent model in the database.
+--!
+--! @param      keyType  The context to ignore in: global, network, channel
+--! @param      event    The textevent to ignore
+--! @param      network  (Optional) The network to ignore in
+--! @param      channel  (Optional) The channel to ignore in
+--!
 function models_textEvent.add_event(keyType, event, network, channel)
 	local formattedTable = models_textEvent.get_event(event)
 	if keyType == 'global' then
@@ -86,6 +119,14 @@ function models_textEvent.add_event(keyType, event, network, channel)
 	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
 end
 
+--!
+--! @brief      Removes an event from the models_textEvent model in the database.
+--!
+--! @param      keyType  The context to ignore in: global, network, channel
+--! @param      event    The textevent to ignore
+--! @param      network  (Optional) The network to ignore in
+--! @param      channel  (Optional) The channel to ignore in
+--!
 function models_textEvent.remove_event(keyType, event, network, channel)
 	local formattedTable = models_textEvent.get_event(event)
 	if keyType == 'global' then
@@ -111,6 +152,16 @@ function models_textEvent.remove_event(keyType, event, network, channel)
 	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
 end
 
+--!
+--! @brief      Iterates all database values matching textevent model over
+--!             lambda. Key is converted to a string indicating the event. Value
+--!             is converted into
+--!             {global=string,networks=[string],channets=[{channel=string,
+--!             network=string}]} format.
+--!
+--! @param      lambda  The lambda with two arguments roughly corresponding to
+--!                     key,value
+--!
 function models_textEvent.iterate_over_lambda(lambda)
 	local model_lambda = function(name, value)
 		local delimStart, delimEnd =

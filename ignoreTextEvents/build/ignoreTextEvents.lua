@@ -1,12 +1,13 @@
 __luapack_modules__ = {
     (function()
-        ----------------------------------------------------
-        -- Utility functions
-        ----------------------------------------------------
-        
         local utilities = {}
         
         -- Converts table to human readable format
+        --
+        -- @param      o     {input table}
+        --
+        -- @return     string
+        --
         function utilities.dump(o)
         	if type(o) == 'table' then
         		local s = '{ '
@@ -22,7 +23,14 @@ __luapack_modules__ = {
         	end
         end
         
-        -- Returns an array-like table from a string s, splitting the string using delimiter
+        -- Returns an array-like table from a string s, splitting the string using
+        -- delimiter
+        --
+        -- @param      s          string to split
+        -- @param      delimiter  The delimiter to split with
+        --
+        -- @return     [string]
+        --
         function utilities.split(s, delimiter)
         	local result = {}
         	for match in (s .. delimiter):gmatch('(.-)' .. delimiter) do
@@ -35,16 +43,35 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Joins table entries using delimiter into a string
+        --!
+        --! @param      tab        Array like table
+        --! @param      delimiter  The delimiter to join with
+        --!
+        --! @return     string
+        --!
         function utilities.join(tab, delimiter)
         	return table.concat(tab, delimiter)
         end
         
         -- Removes whitespace around string s
+        --
+        -- @param      s     string to remove whitespace around
+        --
+        -- @return     string
+        --
         function utilities.trim(s)
         	return (s:gsub('^%s*(.-)%s*$', '%1'))
         end
         
         -- Checks if table tab has value val, return false if not
+        --
+        -- @param      tab   The table to check
+        -- @param      val   The value to find in the table
+        --
+        -- @return     True if table has value, False otherwise.
+        --
         function utilities.has_value(tab, val)
         	for index, value in ipairs(tab) do
         		if value == val then
@@ -55,6 +82,13 @@ __luapack_modules__ = {
         end
         
         -- https://bitbucket.org/snippets/marcotrosi/XnyRj/lua-isequal
+        -- Checks if two tables are equal -- can perform deep search
+        --
+        -- @param      tab1  The first table
+        -- @param      tab2  The second table
+        --
+        -- @return     True if equal for tables, False otherwise.
+        --
         local function is_equal_for_tables(tab1, tab2)
         	if tab1 == tab2 then
         		return true
@@ -93,6 +127,12 @@ __luapack_modules__ = {
         end
         
         -- Returns index of val in table tab or nil if not found
+        --
+        -- @param      tab          Table to look in
+        -- @param      valueToFind  The value to find
+        --
+        -- @return     Number index or nil if not found
+        --
         function utilities.find(tab, valueToFind)
         	for i, v in pairs(tab) do
         		if type(v) == 'table' then
@@ -106,6 +146,15 @@ __luapack_modules__ = {
         	return nil
         end
         
+        --!
+        --! @brief      Takes string and sets it to len length, padding with whitespace
+        --!             if needed
+        --!
+        --! @param      str   The string
+        --! @param      len   Number, The length to set it to
+        --!
+        --! @return     string
+        --!
         function utilities.length_format(str, len)
         	if (#str == len) then
         		return str
@@ -123,10 +172,6 @@ __luapack_modules__ = {
     
     end),
     (function()
-        ----------------------------------------------------
-        -- Preferences/constants
-        ----------------------------------------------------
-        
         local constants = {}
         
         -- Delimiter variables. Changing preferences delimiter will invalidate preferences
@@ -324,6 +369,14 @@ __luapack_modules__ = {
         	return returnString
         end
         
+        --!
+        --! @brief      Takes key from database and extracts the keyType
+        --!             (channel/network/global)
+        --!
+        --! @param      key   The key from the database
+        --!
+        --! @return     String or nil if not found
+        --!
         function db_utils.extract_keyType(key)
         	local locationOfFirstDelim =
         		string.find(key, const.preferencesDelimiter, 0, true)
@@ -337,6 +390,13 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Converts a database key into a more workable table
+        --!
+        --! @param      key   The key from the database
+        --!
+        --! @return     {keyType = string, textevent/network/channel = string}
+        --!
         function db_utils.convert_key_to_table(key)
         	local keyType = db_utils.extract_keyType(key)
         	local keyArray = util.split(key, const.preferencesDelimiter)
@@ -503,12 +563,30 @@ __luapack_modules__ = {
         -- list of text events
         ----------------------------------------------------
         
+        --!
+        --! @brief      Gets the events ignored in current context in an array-like
+        --!             table
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
+        --! @return     [string]
+        --!
         function models_channetg.get_events_array(keyType, network, channel)
         	return db_utils.comma_delim_string_to_array(
         		db.get_preference_valuestring(keyType, network, channel)
         	)
         end
         
+        --!
+        --! @brief      Adds an event to the channel/network/global models.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function models_channetg.add_event(keyType, event, network, channel)
         	local previousValueTable =
         		models_channetg.get_events_array(keyType, network, channel)
@@ -523,6 +601,16 @@ __luapack_modules__ = {
         	db.set_preference_valuestring(keyType, newValue, network, channel)
         end
         
+        --!
+        --! @brief      Removes an event from channel/network/global models
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
+        --! @return     [array-like table of value strings]
+        --!
         function models_channetg.remove_event(keyType, event, network, channel)
         	local previousValueTable =
         		models_channetg.get_events_array(keyType, network, channel)
@@ -535,6 +623,14 @@ __luapack_modules__ = {
         	return previousValueTable
         end
         
+        --!
+        --! @brief      Iterates all database values matching keyType over lambda. Key
+        --!             is converted to {channel=string,network=string} format.
+        --!
+        --! @param      keyType  The key type -- network, channel, global
+        --! @param      lambda   The lambda with two arguments roughly corresponding to
+        --!                      key,value
+        --!
         function models_channetg.iterate_over_lambda(keyType, lambda)
         	local model_lambda = function(name, value)
         		local chanNetTable = db_utils.convert_key_to_table(name)
@@ -542,26 +638,6 @@ __luapack_modules__ = {
         	end
         	db.iterate_prefs_over_lambda(keyType, model_lambda)
         end
-        
-        --
-        -- local function modelchannet_is_set_to_ignore_channet(event, network, channel)
-        -- 	local currentNetworkIgnoredEvents =
-        -- 		modelchannet_get_preference_events_values_array('network', network)
-        -- 	if has_value(currentNetworkIgnoredEvents, event) then
-        -- 		return true
-        -- 	else
-        -- 		local currentChannelIgnoredEvents =
-        -- 			modelchannet_get_preference_events_values_array(
-        -- 				'channel',
-        -- 				network,
-        -- 				channel
-        -- 			)
-        -- 		if has_value(currentChannelIgnoredEvents, event) then
-        -- 			return true
-        -- 		end
-        -- 	end
-        -- 	return false
-        -- end
         
         return models_channetg
     
@@ -587,7 +663,15 @@ __luapack_modules__ = {
         -- gbool||||||n1,n3,n3||||||c1;;;;;;nc1,c2;;;;;;nc2,c3;;;;;;nc3
         ----------------------------------------------------
         
-        function convert_tevalue_to_table(value)
+        --!
+        --! @brief      Convert textevent model database value into table
+        --!
+        --! @param      value  The database value -- see info above
+        --!
+        --! @return     {global=string,networks=[string],channets=[{channel=string,
+        --! 			network=string}]}
+        --!
+        local function convert_tevalue_to_table(value)
         	local splitTable = util.split(value, const.preferencesDelimiter)
         	if #splitTable == 3 then
         		local formattedTable = {}
@@ -613,6 +697,15 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Opposite operation of above function -- output from above
+        --!             function into a value for storing in the database
+        --!
+        --! @param      valueTable  The value table generated from
+        --!                         convert_tevalue_to_table
+        --!
+        --! @return     String, the database value -- see info above
+        --!
         local function convert_table_to_tevalue(valueTable)
         	local returnString = ''
         	returnString =
@@ -632,12 +725,28 @@ __luapack_modules__ = {
         	return returnString
         end
         
+        --!
+        --! @brief      Returns info table about event in database
+        --!
+        --! @param      event  The event string
+        --!
+        --! @return     {global=string,networks=[string],channets=[{channel=string,
+        --! 			network=string}]}
+        --!
         function models_textEvent.get_event(event)
         	local prefValue = db.get_preference_valuestring('textevent', event)
         	local formattedTable = convert_tevalue_to_table(prefValue)
         	return formattedTable
         end
         
+        --!
+        --! @brief      Adds an event to the models_textEvent model in the database.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function models_textEvent.add_event(keyType, event, network, channel)
         	local formattedTable = models_textEvent.get_event(event)
         	if keyType == 'global' then
@@ -654,6 +763,14 @@ __luapack_modules__ = {
         	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
         end
         
+        --!
+        --! @brief      Removes an event from the models_textEvent model in the database.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function models_textEvent.remove_event(keyType, event, network, channel)
         	local formattedTable = models_textEvent.get_event(event)
         	if keyType == 'global' then
@@ -679,6 +796,16 @@ __luapack_modules__ = {
         	db.set_preference_valuestring('textevent', formattedTextEventValue, event)
         end
         
+        --!
+        --! @brief      Iterates all database values matching textevent model over
+        --!             lambda. Key is converted to a string indicating the event. Value
+        --!             is converted into
+        --!             {global=string,networks=[string],channets=[{channel=string,
+        --!             network=string}]} format.
+        --!
+        --! @param      lambda  The lambda with two arguments roughly corresponding to
+        --!                     key,value
+        --!
         function models_textEvent.iterate_over_lambda(lambda)
         	local model_lambda = function(name, value)
         		local delimStart, delimEnd =
@@ -694,20 +821,36 @@ __luapack_modules__ = {
     
     end),
     (function()
-        ---------------------------------------------------
-        -- Models: add/remove
-        ---------------------------------------------------
-        
         local models = {}
         
         local channetg = __luapack_require__(5)
         local te = __luapack_require__(6)
         local db = __luapack_require__(4)
+        --!
+        --! @brief      Adds an event to both model types.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
+        --! @return     { description_of_the_return_value }
+        --!
         function models.add_event(keyType, event, network, channel)
         	channetg.add_event(keyType, event, network, channel)
         	te.add_event(keyType, event, network, channel)
         end
         
+        --!
+        --! @brief      Removes an event from both models types.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
+        --! @return     [string array of events in current context]
+        --!
         function models.remove_event(keyType, event, network, channel)
         	local updatedValueTable =
         		channetg.remove_event(keyType, event, network, channel)
@@ -715,18 +858,34 @@ __luapack_modules__ = {
         	return updatedValueTable
         end
         
+        --!
+        --! @brief      Resets the database.
+        --!
         function models.reset()
         	db.reset()
         end
         
+        --!
+        --! @brief      Prints out information from database.
+        --!
         function models.debug()
         	db.debug()
         end
         
+        --!
+        --! @brief      Iterates lambda over text event information.
+        --!
+        --! @param      lambda  The lambda -- see models_te for info
+        --!
         function models.iterate_over_all_event_data(lambda)
         	te.iterate_over_lambda(lambda)
         end
         
+        --!
+        --! @brief      Sets the version in the database
+        --!
+        --! @param      version  The version string
+        --!
         function models.set_version(version)
         	db.set_version(version)
         end
@@ -746,6 +905,13 @@ __luapack_modules__ = {
         -- Views: Menu manipulation
         ----------------------------------------------------
         
+        --!
+        --! @brief      Adds a text event to an already created menu.
+        --!
+        --! @param      eventsString  The event or comma delim string of events
+        --! @param      menuSettings  {type=channel/network,network=string,
+        --!                           (channel)=string}
+        --!
         local function add_text_events_to_currently_ignored_in_menu(
         eventsString,
         	menuSettings
@@ -787,6 +953,15 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Adds a currently ignored in > network > channel > event item
+        --!
+        --! @param      network       The network the channel is in
+        --! @param      channel       The channel to ignore
+        --! @param      eventsString  The event string (or multiple events comma delim)
+        --!
+        --! @return     { description_of_the_return_value }
+        --!
         local function add_ignored_channel_menu(network, channel, eventsString)
         	hexchat.command(
         		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Channels/' .. network:gsub(
@@ -808,6 +983,12 @@ __luapack_modules__ = {
         	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
         end
         
+        --!
+        --! @brief      Adds a currently ignored in > network > event menu item toggle
+        --!
+        --! @param      network       The network to ignore
+        --! @param      eventsString  The event string (or multiple events comma delim)
+        --!
         local function add_ignored_network_menu(network, eventsString)
         	hexchat.command(
         		'menu add "Settings/Ignore Text Events/Events Currently Ignored In/Networks/' .. network:gsub(
@@ -822,6 +1003,18 @@ __luapack_modules__ = {
         	add_text_events_to_currently_ignored_in_menu(eventsString, menuSettings)
         end
         
+        --!
+        --! @brief      Removes an event from the currently ignored in > network >
+        --!             channel menu. Will remove the channel entirely if no other
+        --!             events present. Will remove the network entirely if no other
+        --!             channels present.
+        --!
+        --! @param      network          The network the channel is located in
+        --! @param      channel          The channel string
+        --! @param      textEventsArray  The array like table of currently ignored text
+        --!                              events in the network
+        --! @param      event            The event string
+        --!
         local function remove_ignored_channel_menu(
         network,
         	channel,
@@ -861,6 +1054,15 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Removes an event from the currently ignored in > network menu.
+        --!             Will remove the network entirely if no other events present.
+        --!
+        --! @param      network          The network
+        --! @param      textEventsArray  The array like table of currently ignored text
+        --!                              events in the network
+        --! @param      event            The event string
+        --!
         local function remove_ignored_network_menu(network, textEventsArray, event)
         	if #textEventsArray > 1 then
         		hexchat.command(
@@ -903,6 +1105,11 @@ __luapack_modules__ = {
         	channet.iterate_over_lambda('network', iterateOver)
         end
         
+        --!
+        --! @brief      Generate menu with all text events added for given context
+        --!
+        --! @param      context  The context -- String Channel or Network
+        --!
         local function generate_context_menu(context)
         	for key, event in pairs(const.listOfTextEvents) do
         		local formattedEvent = event:gsub(' ', const.spaceDelimiter)
@@ -939,6 +1146,14 @@ __luapack_modules__ = {
         -- Views: add/remove event
         ----------------------------------------------------
         
+        --!
+        --! @brief      Adds an event to the currently ignored menu.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function views.add_event(keyType, event, network, channel)
         	if keyType == 'network' then
         		add_ignored_network_menu(network, event)
@@ -947,6 +1162,18 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Removes an event from the currently ignored menu.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      updatedModelTextEventsTable  Array like table of events still
+        --! 										 being ignored in current context.
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
+        --! @return     { description_of_the_return_value }
+        --!
         function views.remove_event(
         keyType,
         	updatedModelTextEventsTable,
@@ -970,7 +1197,7 @@ __luapack_modules__ = {
         -- Views: Menu init and unloading
         ----------------------------------------------------
         
-        -- Loads all the menus
+        -- Loads all the menus at application start.
         function views.load_menus()
         	hexchat.command('menu add "Settings/Ignore Text Events"')
         
@@ -1004,7 +1231,7 @@ __luapack_modules__ = {
         	generate_global_menu()
         end
         
-        -- Unload handler
+        -- Unload handler -- will delete all menus.
         function views.unload_menus()
         	hexchat.command('menu del "Settings/Ignore Text Events"')
         end
@@ -1020,14 +1247,25 @@ __luapack_modules__ = {
         local util = __luapack_require__(1)
         local hook_lookup_table = {}
         
-        ----------------------------------------------------
-        -- Hooks: Text event handlers
-        ----------------------------------------------------
-        
+        --!
+        --! @brief      What happens when an event is found that should be ignored. Will
+        --!             eat the event thus removing it from the user and stopping other
+        --!             plugins from interacting with it.
+        --!
+        --! @return     hexchat.EAT_ALL object
+        --!
         local function kill_event()
         	return hexchat.EAT_ALL
         end
         
+        --!
+        --! @brief      Checks if given data signals that a text event should be ignored
+        --!
+        --! @param      ignoredData  {global=string,networks=[string],channets=[{channel
+        --! 			,network}]}
+        --!
+        --! @return     hexchat.EAT_ALL object if text event should be ignored/eaten
+        --!
         local function check_if_ignored(ignoredData)
         	if ignoredData.global == 'true' then
         		return kill_event()
@@ -1046,6 +1284,16 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Creates hexchat hook, returns pointer
+        --!
+        --! @param      event        The event to hook
+        --! @param      ignoredData  ignoredData
+        --!                          {global=string,networks=[string],channets=[{channel
+        --!                          ,network}]}
+        --!
+        --! @return     hook pointer
+        --!
         local function create_hook(event, ignoredData)
         	return hexchat.hook_print(
         		event,
@@ -1056,15 +1304,38 @@ __luapack_modules__ = {
         	)
         end
         
+        --!
+        --! @brief      Unhooks a hook for an event and removes it from lookup table
+        --!
+        --! @param      event  The event to delete
+        --!
+        --! @return     { description_of_the_return_value }
+        --!
         local function delete_hook(event)
         	hexchat.unhook(hook_lookup_table[event])
         	hook_lookup_table[event] = nil
         end
         
+        --!
+        --! @brief      Get database data of event
+        --!
+        --! @param      event  The event
+        --!
+        --! @return     {} - models_te database data table
+        --!
         function hooks.get_event_data(event)
         	return te.get_event(event)
         end
         
+        --!
+        --! @brief      Adds an event hook. If a previous one exists, removes it before
+        --! 			adding a new one.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function hooks.add_event_hook(keyType, event, network, channel)
         	if hook_lookup_table[event] then
         		delete_hook(event)
@@ -1073,6 +1344,16 @@ __luapack_modules__ = {
         	hook_lookup_table[event] = create_hook(event, ignoredData)
         end
         
+        --!
+        --! @brief      Removes an event hook. Removes the data from the lookup table if
+        --!             no other contexts ignore the event. Otherwise, readds it with
+        --!             the other still ignored contexts.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function hooks.remove_event_hook(keyType, event, network, channel)
         	delete_hook(event)
         	local ignoredData = hooks.get_event_data(event)
@@ -1081,6 +1362,9 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Loads all hooks at application start.
+        --!
         function hooks.load_all_hooks()
         	local iterateOver = function(event, ignoredData)
         		if not (ignoredData['global'] == 'false' and #ignoredData['networks'] == 0 and #ignoredData['channets'] == 0) then
@@ -1090,12 +1374,18 @@ __luapack_modules__ = {
         	te.iterate_over_lambda(iterateOver)
         end
         
+        --!
+        --! @brief      Deletes all hooks.
+        --!
         function hooks.reset()
         	for event, hook in pairs(hook_lookup_table) do
         		delete_hook(event)
         	end
         end
         
+        --!
+        --! @brief      Prints hook_lookup_table to see what hooks are enabled.
+        --!
         function hooks.debug()
         	local printString = 'Enabled hooks: '
         	for event, hook in pairs(hook_lookup_table) do
@@ -1108,22 +1398,34 @@ __luapack_modules__ = {
     
     end),
     (function()
-        ----------------------------------------------------
-        -- Controller
-        ----------------------------------------------------
-        
         local controller = {}
         local views = __luapack_require__(8)
         local models = __luapack_require__(7)
         local hooks = __luapack_require__(9)
         local controller_version = ''
         
+        --!
+        --! @brief      Adds an event to relevant models, views, and hooks.
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function controller.add_event(keyType, event, network, channel)
         	models.add_event(keyType, event, network, channel)
         	views.add_event(keyType, event, network, channel)
         	hooks.add_event_hook(keyType, event, network, channel)
         end
         
+        --!
+        --! @brief      Removes an event from relevant models, views, and hooks
+        --!
+        --! @param      keyType  The context to ignore in: global, network, channel
+        --! @param      event    The textevent to ignore
+        --! @param      network  (Optional) The network to ignore in
+        --! @param      channel  (Optional) The channel to ignore in
+        --!
         function controller.remove_event(keyType, event, network, channel)
         	local updatedModelTextEventsTable =
         		models.remove_event(keyType, event, network, channel)
@@ -1137,6 +1439,9 @@ __luapack_modules__ = {
         	hooks.remove_event_hook(keyType, event, network, channel)
         end
         
+        --!
+        --! @brief      Loads saved data, creates menus, loads hooks based on saved data
+        --!
         function controller.init()
         	models.set_version(controller_version)
         	hexchat.hook_unload(views.unload_menus)
@@ -1144,6 +1449,9 @@ __luapack_modules__ = {
         	hooks.load_all_hooks()
         end
         
+        --!
+        --! @brief      Resets all saved data, resets menus, resets hooks
+        --!
         function controller.reset()
         	models.reset()
         	models.set_version(controller_version)
@@ -1152,19 +1460,37 @@ __luapack_modules__ = {
         	views.load_menus()
         end
         
+        --!
+        --! @brief      Prints out debugging information from models and views
+        --!
         function controller.debug()
         	models.debug()
         	hooks.debug()
         end
         
+        --!
+        --! @brief      Gets data related to given event
+        --!
+        --! @param      event  The text event to pull data from
+        --!
         function controller.get_event_data(event)
         	return hooks.get_event_data(event)
         end
         
+        --!
+        --! @brief      Iterates over all text event data with given lambda
+        --!
+        --! @param      lambda  The lambda, see models_te for details
+        --!
         function controller.iterate_over_all_event_data(lambda)
         	models.iterate_over_all_event_data(lambda)
         end
         
+        --!
+        --! @brief      Sets the application version. Useful for future proofing.
+        --!
+        --! @param      version  The version string of the application to set
+        --!
         function controller.set_version(version)
         	controller_version = version
         end
@@ -1173,17 +1499,19 @@ __luapack_modules__ = {
     
     end),
     (function()
-        ----------------------------------------------------
-        -- Command callbacks
-        ----------------------------------------------------
-        
         local commandCallbacks = {}
         
         local util = __luapack_require__(1)
         local const = __luapack_require__(2)
         local controller = __luapack_require__(10)
-        -- Uses default context unless arguments supplied.
-        -- Converts arguments if they're coming from menu
+        -- Uses default context unless arguments supplied. Converts arguments if they're
+        -- coming from menu.
+        --
+        -- @param      word  The input array from the command
+        --
+        -- @return     {'keyType' = string,'event' = string,'network' = string,'channel'
+        --             = string}
+        --
         local function callback_handler(word)
         	local returnArray = {
         		channel = hexchat.get_info('channel'),
@@ -1206,9 +1534,14 @@ __luapack_modules__ = {
         			util.trim(word[5]:gsub(const.spaceDelimiter, ' '))
         	end
         	return returnArray
-        	-- TODO sanitize event against event list
         end
         
+        --!
+        --! @brief      Start ignoring an event. Checks if it already exists, if not
+        --!             sends it to the controller to add.
+        --!
+        --! @param      word  Command data
+        --!
         function commandCallbacks.start_ignoring_event_cb(word)
         	local infoArray = callback_handler(word)
         	local alreadyExists = false
@@ -1255,6 +1588,11 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Stops ignoring an already ignored event.
+        --!
+        --! @param      word  Command data
+        --!
         function commandCallbacks.stop_ignoring_event_cb(word)
         	local infoArray = callback_handler(word)
         	if infoArray['keyType'] == 'channel' then
@@ -1275,6 +1613,11 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Check if an event is ignored in the given context
+        --!
+        --! @param      word  Command data
+        --!
         function commandCallbacks.check_event_ignored_context_cb(word)
         	local infoArray = callback_handler(word)
         	local ignoredData = controller.get_event_data(infoArray['event'])
@@ -1312,6 +1655,11 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Checks if an event is ignored and if so, where?
+        --!
+        --! @param      word  Command data
+        --!
         function commandCallbacks.check_event_ignored_cb(word)
         	local ignoredData = controller.get_event_data(word[2])
         	if ignoredData.global == 'true' then
@@ -1336,6 +1684,10 @@ __luapack_modules__ = {
         	end
         end
         
+        --!
+        --! @brief      Lists all ignored events and where they are ignored in a
+        --!             human-readable format
+        --!
         function commandCallbacks.list_events_ignored_cb()
         	print('>---------------v--------v---------------------------------<')
         	print('|event__________|context_|location_________________________|')
@@ -1380,10 +1732,9 @@ __luapack_modules__ = {
         function commandCallbacks.reset_plugin_prefs_cb()
         	controller.reset()
         	print('Ignore Text Events: Reset complete')
-        	-- TODO version
         end
         
-        -- Prints out hexchat.pluginprefs in human readable format
+        -- Prints out hexchat.pluginprefs and what hooks are enabled
         function commandCallbacks.debug_plugin_prefs_cb()
         	controller.debug()
         end
@@ -1420,8 +1771,6 @@ end
 
 local controller = __luapack_require__(10)
 local callbacks = __luapack_require__(11)
-controller.set_version(version)
-
 ----------------------------------------------------
 -- Command hooks
 ----------------------------------------------------
@@ -1462,4 +1811,5 @@ hexchat.hook_command(
 	'Usage: debugIgnoreTextEvents\n\tWill print out plugin preferences.'
 )
 
+controller.set_version(version)
 controller.init()
