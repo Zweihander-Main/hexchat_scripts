@@ -66,9 +66,9 @@ build/Release
 node_modules
 
 #Don't import .tmp or dist folders
-.tmp
-dist
-build
+# .tmp
+# dist
+# build
 
 #SublimeText
 *.tmlanguage.cache
